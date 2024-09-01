@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "305792843823",
+    "project_id": "baby-care-assistant",
+    "storage_bucket": "baby-care-assistant.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:305792843823:android:7e36bc533b9b92b5d786da",
+        "android_client_info": {
+          "package_name": "dev.sobhy.babycareassistant"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyArVXVTCP2BQj0Q45KuBa_b4J49oEGIZT8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

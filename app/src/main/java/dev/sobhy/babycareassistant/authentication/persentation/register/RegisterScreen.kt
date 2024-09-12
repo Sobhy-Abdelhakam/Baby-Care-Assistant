@@ -263,7 +263,7 @@ fun RegisterScreen(
                             Text(text = "Age")
                         },
                         singleLine = true,
-                        readOnly = true,
+                        enabled = false,
                         modifier = Modifier.weight(1f),
                         supportingText = { },
                     )

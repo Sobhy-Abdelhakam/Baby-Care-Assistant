@@ -38,6 +38,7 @@ import dev.sobhy.babycareassistant.ui.composable.CustomTextField
 import dev.sobhy.babycareassistant.ui.composable.CustomTimePicker
 import dev.sobhy.babycareassistant.ui.composable.Loader
 import java.time.LocalDate
+import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 
 @Composable
@@ -80,7 +81,7 @@ fun AddDiaperScreen(
                         state.diaperDate.toString()
                     },
                     onValueChange = {},
-                    modifier = Modifier.weight(3f),
+                    modifier = Modifier.weight(2.5f),
                     label = {
                         Text(text = "Date")
                     },
@@ -118,8 +119,8 @@ fun AddDiaperScreen(
                         Text(text = "Day")
                     },
                     singleLine = true,
-                    readOnly = true,
-                    modifier = Modifier.weight(1f),
+                    enabled = false,
+                    modifier = Modifier.weight(1.5f),
                     supportingText = {}
                 )
             }
@@ -153,8 +154,19 @@ fun AddDiaperScreen(
                             textAlign = TextAlign.Center
                         )
                         OutlinedTextField(
-                            value = value.format(DateTimeFormatter.ofPattern("hh:mm a")),
+                            value = if(value == LocalTime.of(0,0,30)){
+                                ""
+                            }else{
+                                value.format(DateTimeFormatter.ofPattern("hh:mm a"))
+                            },
                             onValueChange = { },
+                            readOnly = true,
+                            label = {
+                                Text(text = "Time")
+                            },
+                            placeholder = {
+                                Text(text = "6:30 AM")
+                            },
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(vertical = 6.dp),

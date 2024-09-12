@@ -36,7 +36,7 @@ fun CustomTextField(
         label = { Text(text = label) },
         placeholder = { Text(text = placeHolder) },
         singleLine = singleLine,
-        readOnly = readOnly,
+        enabled = !readOnly,
         isError = errorText != null,
         supportingText = {
             if (errorText != null) {

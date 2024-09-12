@@ -123,7 +123,7 @@ fun AddVaccinationScreen(
                         state.vaccinationDate.toString()
                     },
                     onValueChange = {},
-                    modifier = Modifier.weight(3f),
+                    modifier = Modifier.weight(2.5f),
                     label = {
                         Text(text = "Vaccination Date")
                     },
@@ -161,8 +161,8 @@ fun AddVaccinationScreen(
                         Text(text = "Day")
                     },
                     singleLine = true,
-                    readOnly = true,
-                    modifier = Modifier.weight(1f),
+                    enabled = false,
+                    modifier = Modifier.weight(1.5f),
                     supportingText = {}
                 )
             }

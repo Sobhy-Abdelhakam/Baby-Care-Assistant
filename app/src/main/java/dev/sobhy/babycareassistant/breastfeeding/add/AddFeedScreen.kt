@@ -9,7 +9,6 @@ import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material3.Button
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -39,6 +38,7 @@ import dev.sobhy.babycareassistant.ui.composable.CustomTextField
 import dev.sobhy.babycareassistant.ui.composable.CustomTimePicker
 import dev.sobhy.babycareassistant.ui.composable.Loader
 import java.time.LocalDate
+import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 
 @Composable
@@ -54,7 +54,7 @@ fun AddFeedScreen(
         mutableIntStateOf(0)
     }
     LaunchedEffect(Unit) {
-        if (feedingId != null){
+        if (feedingId != null) {
             viewModel.getFeedingById(feedingId)
         }
     }
@@ -82,7 +82,7 @@ fun AddFeedScreen(
                         state.feedingDate.toString()
                     },
                     onValueChange = {},
-                    modifier = Modifier.weight(3f),
+                    modifier = Modifier.weight(2.6f),
                     label = {
                         Text(text = "Breastfeeding Date")
                     },
@@ -97,17 +97,17 @@ fun AddFeedScreen(
                             )
                         }
                     },
-                        isError = state.dateError != null,
-                        supportingText = {
-                            if (state.dateError != null) {
-                                Text(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    text = state.dateError!!,
-                                    color = MaterialTheme.colorScheme.error,
-                                    textAlign = TextAlign.Start,
-                                )
-                            }
+                    isError = state.dateError != null,
+                    supportingText = {
+                        if (state.dateError != null) {
+                            Text(
+                                modifier = Modifier.fillMaxWidth(),
+                                text = state.dateError!!,
+                                color = MaterialTheme.colorScheme.error,
+                                textAlign = TextAlign.Start,
+                            )
                         }
+                    }
                 )
                 Spacer(modifier = Modifier.weight(0.2f))
                 OutlinedTextField(
@@ -120,9 +120,9 @@ fun AddFeedScreen(
                         Text(text = "Day")
                     },
                     singleLine = true,
-                    readOnly = true,
-                    modifier = Modifier.weight(1f),
-                    supportingText = {}
+                    modifier = Modifier.weight(1.5f),
+                    supportingText = {},
+                    enabled = false
                 )
             }
         }
@@ -174,8 +174,19 @@ fun AddFeedScreen(
                             textAlign = TextAlign.Center
                         )
                         OutlinedTextField(
-                            value = value.format(DateTimeFormatter.ofPattern("hh:mm a")),
+                            value = if (value == LocalTime.of(0, 0, 30)) {
+                                ""
+                            } else {
+                                value.format(DateTimeFormatter.ofPattern("hh:mm a"))
+                            },
                             onValueChange = { },
+                            readOnly = true,
+                            label = {
+                                Text(text = "Time")
+                            },
+                            placeholder = {
+                                Text(text = "6:30 AM")
+                            },
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(vertical = 6.dp),

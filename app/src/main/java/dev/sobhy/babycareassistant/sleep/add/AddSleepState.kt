@@ -6,8 +6,8 @@ import java.time.LocalTime
 
 data class AddSleepState(
     val date: LocalDate = LocalDate.of(1000, 1, 1),
-    val sleepTime: LocalTime = LocalTime.of(10, 0),
-    val wakeUpTime: LocalTime = LocalTime.of(10, 0),
+    val sleepTime: LocalTime = LocalTime.of(0, 0, 30),
+    val wakeUpTime: LocalTime = LocalTime.of(0, 0, 30),
     val duration: String = "",
     val sleepTimesList: List<SleepTime> = emptyList(),
 

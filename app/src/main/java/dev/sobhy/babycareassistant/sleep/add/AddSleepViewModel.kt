@@ -65,8 +65,8 @@ class AddSleepViewModel @Inject constructor(
                         addSleepState.value.duration
                     )
                 ),
-                sleepTime = LocalTime.of(10, 0),
-                wakeUpTime = LocalTime.of(10, 0),
+                sleepTime = LocalTime.of(0, 0,30),
+                wakeUpTime = LocalTime.of(0, 0,30),
                 duration = "",
                 sleepTimesError = null
             )

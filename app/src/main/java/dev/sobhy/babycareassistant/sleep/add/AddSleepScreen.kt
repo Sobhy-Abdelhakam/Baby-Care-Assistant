@@ -1,14 +1,11 @@
 package dev.sobhy.babycareassistant.sleep.add
 
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -37,9 +34,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -127,12 +122,20 @@ fun AddSleepScreen(
         }
         item {
             OutlinedTextField(
-                value = state.sleepTime.format(DateTimeFormatter.ofPattern("hh:mm a")),
+                value = if (state.sleepTime == LocalTime.of(0, 0, 30)) {
+                    ""
+                } else {
+                    state.sleepTime.format(DateTimeFormatter.ofPattern("hh:mm a"))
+                },
                 onValueChange = { },
+                readOnly = true,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 6.dp),
                 label = {
+                    Text(text = "Sleep time")
+                },
+                placeholder = {
                     Text(text = "Sleep time")
                 },
                 trailingIcon = {
@@ -152,12 +155,20 @@ fun AddSleepScreen(
         }
         item {
             OutlinedTextField(
-                value = state.wakeUpTime.format(DateTimeFormatter.ofPattern("hh:mm a")),
+                value = if (state.wakeUpTime == LocalTime.of(0, 0, 30)) {
+                    ""
+                } else {
+                    state.wakeUpTime.format(DateTimeFormatter.ofPattern("hh:mm a"))
+                },
                 onValueChange = { },
+                readOnly = true,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 6.dp),
                 label = {
+                    Text(text = "Wake up time")
+                },
+                placeholder = {
                     Text(text = "Wake up time")
                 },
                 trailingIcon = {
@@ -187,7 +198,9 @@ fun AddSleepScreen(
                     label = "Sleep duration",
                     placeHolder = "00:00",
                     readOnly = true,
-                    modifier = Modifier.weight(5f).padding(top = 8.dp)
+                    modifier = Modifier
+                        .weight(5f)
+                        .padding(top = 8.dp)
                 )
                 Spacer(modifier = Modifier.weight(0.2f))
                 Button(
@@ -211,8 +224,10 @@ fun AddSleepScreen(
         item {
             if (state.sleepTimesList.isNotEmpty()) {
                 state.sleepTimesList.forEachIndexed { index, sleepTime ->
-                    val fromFormat = LocalTime.parse(sleepTime.from).format(DateTimeFormatter.ofPattern("hh:mm a"))
-                    val toFormat = LocalTime.parse(sleepTime.to).format(DateTimeFormatter.ofPattern("hh:mm a"))
+                    val fromFormat = LocalTime.parse(sleepTime.from)
+                        .format(DateTimeFormatter.ofPattern("hh:mm a"))
+                    val toFormat =
+                        LocalTime.parse(sleepTime.to).format(DateTimeFormatter.ofPattern("hh:mm a"))
                     Card(
                         shape = MaterialTheme.shapes.small,
                         colors = CardDefaults.outlinedCardColors(),
@@ -231,7 +246,7 @@ fun AddSleepScreen(
                             Text(text = "Sleep time ${index + 1}")
                             IconButton(
                                 onClick = {
-                                          viewModel.onEvent(AddSleepUiEvent.OnDeleteSleepTimeClicked(index))
+                                    viewModel.onEvent(AddSleepUiEvent.OnDeleteSleepTimeClicked(index))
                                 },
                                 colors = IconButtonDefaults.iconButtonColors(
                                     contentColor = MaterialTheme.colorScheme.error
@@ -291,7 +306,7 @@ fun AddSleepScreen(
         item {
             Button(
                 onClick = {
-                          viewModel.onEvent(AddSleepUiEvent.SaveSleepData(sleepId))
+                    viewModel.onEvent(AddSleepUiEvent.SaveSleepData(sleepId))
                 },
                 modifier = Modifier
                     .fillMaxWidth()
@@ -326,7 +341,7 @@ fun AddSleepScreen(
     )
     CustomTimePicker(
         showTimePicker = showTimePicker,
-        timeSelected = {selectedTime ->
+        timeSelected = { selectedTime ->
             if (indexOfTimeTextField == 1) {
                 viewModel.onEvent(
                     AddSleepUiEvent.SleepTimeChange(selectedTime)
@@ -335,7 +350,7 @@ fun AddSleepScreen(
                     selectedTime,
                     state.wakeUpTime
                 )
-                val temp = if(duration.isNegative){
+                val temp = if (duration.isNegative) {
                     duration.plusDays(1)
                 } else {
                     duration
@@ -353,7 +368,7 @@ fun AddSleepScreen(
                     state.sleepTime,
                     selectedTime
                 )
-                val temp = if(duration.isNegative){
+                val temp = if (duration.isNegative) {
                     duration.plusDays(1)
                 } else {
                     duration

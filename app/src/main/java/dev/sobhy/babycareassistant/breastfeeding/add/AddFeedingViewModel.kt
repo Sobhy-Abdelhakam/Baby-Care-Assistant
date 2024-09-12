@@ -30,7 +30,7 @@ class AddFeedingViewModel @Inject constructor(
             is AddFeedingUiEvent.FeedingDayChanged -> updateDay(event.day)
             is AddFeedingUiEvent.NumberOfFeedingsChanged -> {
                 val newFieldsVal = if (event.number.isBlank()) emptyList() else List(event.number.toInt()){index ->
-                    _addFeedingState.value.timesValues.getOrNull(index) ?: LocalTime.of(6, 0)
+                    _addFeedingState.value.timesValues.getOrNull(index) ?: LocalTime.of(0, 0, 30)
                 }
                 _addFeedingState.update {
                     it.copy(
@@ -90,6 +90,14 @@ class AddFeedingViewModel @Inject constructor(
                     dateError = if (errors["dateError"] == true) "Date is required" else null,
                     numberOfFeedingPerDayError = if (errors["numberOfFeedingPerDayError"] == true) "number of feeding per day is required" else null,
                     amountPerTimeError = if (errors["amountOfFeedingPerTimeError"] == true) "amount of feeding per time is required" else null
+                )
+            }
+            return
+        }
+        if (breastFeedingState.timesValues.any { it == LocalTime.of(0,0,30) }){
+            _addFeedingState.update {
+                it.copy(
+                    error = "All time fields are required"
                 )
             }
             return

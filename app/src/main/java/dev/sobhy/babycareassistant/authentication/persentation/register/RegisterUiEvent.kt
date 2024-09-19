@@ -4,7 +4,7 @@ import android.net.Uri
 import java.time.LocalDate
 
 sealed class RegisterUiEvent {
-    data class ImageChange(val image: Uri): RegisterUiEvent()
+    data class ImageChange(val image: Uri?): RegisterUiEvent()
     data class FullNameChange(val name: String) : RegisterUiEvent()
 
     data class EmailChange(val email: String) : RegisterUiEvent()

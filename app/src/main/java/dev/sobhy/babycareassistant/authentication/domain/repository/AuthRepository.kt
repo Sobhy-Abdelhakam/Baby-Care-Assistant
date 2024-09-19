@@ -16,6 +16,7 @@ class AuthRepository(
     private val db: FirebaseFirestore,
     private val storage: FirebaseStorage,
 ) {
+
     suspend fun register(
         fullName: String,
         email: String,

@@ -32,7 +32,8 @@ fun CardFromNotification(
     modifier: Modifier = Modifier,
     amountOfMilk: String? = null,
     timesOfTimes: List<String>,
-    dismiss: () -> Unit
+    dismiss: () -> Unit,
+    onClick: () -> Unit
 ) {
     Dialog(
         onDismissRequest = dismiss
@@ -135,7 +136,7 @@ fun CardFromNotification(
                     Text(text = "Later")
                 }
                 Button(
-                    onClick = dismiss,
+                    onClick = onClick,
                     shape = MaterialTheme.shapes.small,
                 ) {
                     Text(text = "Done")

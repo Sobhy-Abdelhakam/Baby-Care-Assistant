@@ -9,6 +9,7 @@ import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material3.Button
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -30,6 +31,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import dev.sobhy.babycareassistant.ui.composable.AddScreens
@@ -39,8 +41,10 @@ import dev.sobhy.babycareassistant.ui.composable.CustomTimePicker
 import dev.sobhy.babycareassistant.ui.composable.Loader
 import java.time.LocalDate
 import java.time.LocalTime
+import java.time.Year
 import java.time.format.DateTimeFormatter
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddFeedScreen(
     navController: NavController,
@@ -82,9 +86,9 @@ fun AddFeedScreen(
                         state.feedingDate.toString()
                     },
                     onValueChange = {},
-                    modifier = Modifier.weight(2.6f),
+                    modifier = Modifier.weight(3f),
                     label = {
-                        Text(text = "Breastfeeding Date")
+                        Text(text = "Breastfeeding Date", fontSize = 10.sp)
                     },
                     singleLine = true,
                     readOnly = true,
@@ -109,7 +113,7 @@ fun AddFeedScreen(
                         }
                     }
                 )
-                Spacer(modifier = Modifier.weight(0.2f))
+                Spacer(modifier = Modifier.weight(0.1f))
                 OutlinedTextField(
                     value = state.feedingDay,
                     onValueChange = {},
@@ -120,7 +124,7 @@ fun AddFeedScreen(
                         Text(text = "Day")
                     },
                     singleLine = true,
-                    modifier = Modifier.weight(1.5f),
+                    modifier = Modifier.weight(2f),
                     supportingText = {},
                     enabled = false
                 )
@@ -240,6 +244,7 @@ fun AddFeedScreen(
         dismissDatePicker = {
             showDatePicker = false
         },
+        yearRange = IntRange(Year.now().value, Year.now().value + 1),
         dateChange = {
             viewModel.onEvent(AddFeedingUiEvent.FeedingDateChanged(it))
             val day = it.dayOfWeek.name

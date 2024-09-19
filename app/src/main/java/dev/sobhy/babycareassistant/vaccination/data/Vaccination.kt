@@ -1,5 +1,9 @@
 package dev.sobhy.babycareassistant.vaccination.data
 
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
+
+@Parcelize
 data class Vaccination(
     val id: String = "",
     val name: String = "",
@@ -10,4 +14,4 @@ data class Vaccination(
     val reason: String = "",
     val notes: String = "",
     val done: Boolean = false
-)
+): Parcelable

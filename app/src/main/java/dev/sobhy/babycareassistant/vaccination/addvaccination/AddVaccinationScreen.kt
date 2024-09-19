@@ -28,6 +28,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import dev.sobhy.babycareassistant.ui.composable.AddScreens
@@ -123,9 +124,9 @@ fun AddVaccinationScreen(
                         state.vaccinationDate.toString()
                     },
                     onValueChange = {},
-                    modifier = Modifier.weight(2.5f),
+                    modifier = Modifier.weight(3f),
                     label = {
-                        Text(text = "Vaccination Date")
+                        Text(text = "Vaccination Date", fontSize = 12.sp)
                     },
                     singleLine = true,
                     readOnly = true,
@@ -150,7 +151,7 @@ fun AddVaccinationScreen(
                         }
                     }
                 )
-                Spacer(modifier = Modifier.weight(0.2f))
+                Spacer(modifier = Modifier.weight(0.1f))
                 OutlinedTextField(
                     value = state.vaccinationDay,
                     onValueChange = {},
@@ -162,7 +163,7 @@ fun AddVaccinationScreen(
                     },
                     singleLine = true,
                     enabled = false,
-                    modifier = Modifier.weight(1.5f),
+                    modifier = Modifier.weight(2f),
                     supportingText = {}
                 )
             }

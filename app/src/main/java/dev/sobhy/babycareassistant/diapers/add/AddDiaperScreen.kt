@@ -8,6 +8,7 @@ import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material3.Button
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -39,8 +40,10 @@ import dev.sobhy.babycareassistant.ui.composable.CustomTimePicker
 import dev.sobhy.babycareassistant.ui.composable.Loader
 import java.time.LocalDate
 import java.time.LocalTime
+import java.time.Year
 import java.time.format.DateTimeFormatter
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddDiaperScreen(
     navController: NavController,
@@ -81,7 +84,7 @@ fun AddDiaperScreen(
                         state.diaperDate.toString()
                     },
                     onValueChange = {},
-                    modifier = Modifier.weight(2.5f),
+                    modifier = Modifier.weight(2f),
                     label = {
                         Text(text = "Date")
                     },
@@ -120,7 +123,7 @@ fun AddDiaperScreen(
                     },
                     singleLine = true,
                     enabled = false,
-                    modifier = Modifier.weight(1.5f),
+                    modifier = Modifier.weight(2f),
                     supportingText = {}
                 )
             }
@@ -220,6 +223,7 @@ fun AddDiaperScreen(
         dismissDatePicker = {
             showDatePicker = false
         },
+        yearRange = IntRange(Year.now().value, Year.now().value + 1),
         dateChange = {
             viewModel.onEvent(AddDiaperUiEvent.DiaperDateChanged(it))
             val day = it.dayOfWeek.name

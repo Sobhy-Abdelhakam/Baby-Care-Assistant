@@ -77,7 +77,7 @@ class AddFeedingViewModel @Inject constructor(
         }
     }
 
-    private fun addOrUpdateFeeding(id: String?){
+    fun addOrUpdateFeeding(id: String?){
         val breastFeedingState = addFeedingState.value
         val errors = mapOf(
             "dateError" to breastFeedingState.feedingDate.isEqual(LocalDate.of(1000, 1, 1)),

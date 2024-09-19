@@ -18,6 +18,7 @@ import androidx.compose.material.icons.filled.DeleteForever
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
@@ -52,6 +53,7 @@ import java.time.LocalDate
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddSleepScreen(
     navController: NavController,
@@ -210,7 +212,8 @@ fun AddSleepScreen(
                     modifier = Modifier
                         .weight(0.9f)
                         .aspectRatio(1f),
-                    shape = RoundedCornerShape(4.dp)
+                    shape = RoundedCornerShape(4.dp),
+                    enabled = state.sleepTime != LocalTime.of(0, 0, 30) && state.wakeUpTime != LocalTime.of(0,0,30)
                 ) {
                     Icon(
                         imageVector = Icons.Default.Add,

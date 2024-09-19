@@ -10,6 +10,7 @@ data class AddBreastFeedState(
     val amountOfFeedingPerTime: String = "",
     val timesValues: List<LocalTime> = emptyList(),
 
+
     val dateError: String? = null,
     val numberOfFeedingPerDayError: String? = null,
     val amountPerTimeError: String? = null,
@@ -17,4 +18,9 @@ data class AddBreastFeedState(
     val loading: Boolean = false,
     val error: String? = null,
     val success: Boolean = false
+)
+
+data class FeedingTimeData(
+    val feedingTime: LocalTime = LocalTime.of(0, 0, 30),
+    val amountOfMilk: String = "",
 )

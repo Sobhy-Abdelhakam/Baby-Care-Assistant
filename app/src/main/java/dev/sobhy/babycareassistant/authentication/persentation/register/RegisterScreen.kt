@@ -3,7 +3,10 @@ package dev.sobhy.babycareassistant.authentication.persentation.register
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -11,13 +14,14 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.CalendarMonth
-import androidx.compose.material.icons.filled.CameraAlt
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Photo
 import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -25,9 +29,13 @@ import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonColors
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SelectableDates
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
@@ -40,17 +48,18 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.onGloballyPositioned
-import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.toSize
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import coil.compose.rememberAsyncImagePainter
+import dev.sobhy.babycareassistant.R
 import dev.sobhy.babycareassistant.navigation.AuthenticationRoutes
 import dev.sobhy.babycareassistant.navigation.ScreenRoutes
 import dev.sobhy.babycareassistant.ui.composable.CustomDatePicker
@@ -59,6 +68,7 @@ import dev.sobhy.babycareassistant.ui.composable.Loader
 import dev.sobhy.babycareassistant.ui.composable.PasswordTextField
 import java.time.LocalDate
 import java.time.Year
+import java.time.ZoneId
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -80,6 +90,7 @@ fun RegisterScreen(
                 }
             },
         )
+    var changeImageBottomSheet by remember { mutableStateOf(false) }
 
     // lambda remembers for each event
     val nameChange =
@@ -108,8 +119,8 @@ fun RegisterScreen(
         }
 
     if (state.success) {
-        navController.navigate(ScreenRoutes.Home.route){
-            popUpTo(AuthenticationRoutes.LOGIN.route){
+        navController.navigate(ScreenRoutes.Home.route) {
+            popUpTo(AuthenticationRoutes.LOGIN.route) {
                 inclusive = true
             }
             launchSingleTop = true
@@ -162,27 +173,26 @@ fun RegisterScreen(
                         horizontalAlignment = Alignment.CenterHorizontally,
                     ) {
                         Text(text = "Baby Photo")
-                        IconButton(
-                            onClick = {
-                                galleryLauncher.launch("image/*")
+                        Image(
+                            painter = if (state.image == null) {
+                                painterResource(id = R.drawable.image_reg_icon)
+                            } else {
+                                rememberAsyncImagePainter(model = state.image)
                             },
+                            contentDescription = "Baby Image",
                             modifier = Modifier
-                                .size(80.dp)
-                                .background(
-                                    color = MaterialTheme.colorScheme.primary.copy(
-                                        alpha = 0.3f
-                                    ),
-                                    shape = RoundedCornerShape(10.dp)
-                                )
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.CameraAlt,
-                                contentDescription = "load image",
-                                tint = MaterialTheme.colorScheme.primary,
-                                modifier = Modifier
-                                    .size(40.dp)
-                            )
-                        }
+                                .size(100.dp)
+
+                                .clip(shape = RoundedCornerShape(10.dp))
+                                .clickable {
+                                    if (state.image == null) {
+                                        galleryLauncher.launch("image/*")
+                                    } else {
+                                        changeImageBottomSheet = true
+                                    }
+                                },
+                            contentScale = ContentScale.Crop
+                        )
                     }
                     state.imageError?.let {
                         Text(
@@ -192,6 +202,20 @@ fun RegisterScreen(
                             color = MaterialTheme.colorScheme.error,
                         )
                     }
+                }
+                if (changeImageBottomSheet) {
+                    BabyImageBottomSheet(
+                        dismissBottomSheet = {
+                            changeImageBottomSheet = false
+                        },
+                        changeImageClick = {
+                            galleryLauncher.launch("image/*")
+                            changeImageBottomSheet = false
+                        },
+                        deleteImageClick = {
+                            viewModel.onEvent(RegisterUiEvent.ImageChange(null))
+                            changeImageBottomSheet = false
+                        })
                 }
             }
             item {
@@ -353,6 +377,11 @@ fun RegisterScreen(
                     )
                 }
             }
+            state.error?.let {
+                item {
+                    Text(text = it, color = MaterialTheme.colorScheme.error)
+                }
+            }
             item {
                 Row(
                     modifier = Modifier
@@ -370,12 +399,20 @@ fun RegisterScreen(
                 }
             }
         }
+        val today = LocalDate.now()
+        val todayMillis = today.atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli()
         CustomDatePicker(
             showDatePicker = showDatePicker,
             dismissDatePicker = {
                 showDatePicker = false
             },
-            dateChange = {date ->
+            yearRange = IntRange(Year.now().value - 10, Year.now().value),
+            selectableDates = object : SelectableDates {
+                override fun isSelectableDate(utcTimeMillis: Long): Boolean {
+                    return utcTimeMillis <= todayMillis
+                }
+            },
+            dateChange = { date ->
                 dateChange(date)
                 viewModel.onEvent(
                     RegisterUiEvent.AgeChange(
@@ -384,5 +421,89 @@ fun RegisterScreen(
                 )
             },
         )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun BabyImageBottomSheet(
+    dismissBottomSheet: () -> Unit,
+    changeImageClick: () -> Unit,
+    deleteImageClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    ModalBottomSheet(
+        onDismissRequest = dismissBottomSheet,
+    ) {
+        Text(
+            text = "Baby photo",
+            style = MaterialTheme.typography.titleLarge,
+            modifier = Modifier.padding(16.dp),
+        )
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceAround,
+        ) {
+            Column(
+                modifier = Modifier.padding(4.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+                IconButton(
+                    onClick = changeImageClick,
+                    modifier =
+                    Modifier
+                        .size(70.dp)
+                        .border(
+                            width = 1.dp,
+                            color = Color.Gray,
+                            shape = CircleShape,
+                        ),
+                    colors = IconButtonDefaults.iconButtonColors(
+                        containerColor = MaterialTheme.colorScheme.primaryContainer,
+                    )
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Photo,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.primary,
+                    )
+                }
+                Text(
+                    text = "Gallery",
+                    modifier = Modifier.padding(8.dp),
+                    color = MaterialTheme.colorScheme.onPrimaryContainer,
+                )
+            }
+            Column(
+                modifier = Modifier.padding(4.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+                IconButton(
+                    onClick = deleteImageClick,
+                    modifier =
+                    Modifier
+                        .size(70.dp)
+                        .border(
+                            width = 1.dp,
+                            color = Color.Gray,
+                            shape = CircleShape,
+                        ),
+                    colors = IconButtonDefaults.iconButtonColors(
+                        containerColor = MaterialTheme.colorScheme.errorContainer,
+                        contentColor = MaterialTheme.colorScheme.error
+                    )
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Delete,
+                        contentDescription = null,
+                    )
+                }
+                Text(
+                    text = "Delete",
+                    modifier = Modifier.padding(8.dp),
+                    color = MaterialTheme.colorScheme.error,
+                )
+            }
+        }
     }
 }

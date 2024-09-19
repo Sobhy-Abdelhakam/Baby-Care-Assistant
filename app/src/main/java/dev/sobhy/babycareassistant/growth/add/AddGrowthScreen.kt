@@ -14,6 +14,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.SelectableDates
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -35,6 +36,8 @@ import dev.sobhy.babycareassistant.ui.composable.CustomDatePicker
 import dev.sobhy.babycareassistant.ui.composable.CustomTextField
 import dev.sobhy.babycareassistant.ui.composable.Loader
 import java.time.LocalDate
+import java.time.Year
+import java.time.ZoneId
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -241,15 +244,21 @@ fun AddGrowthScreen(
             }
         }
     }
+    val today = LocalDate.now()
+    val todayMillis = today.atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli()
     CustomDatePicker(
         showDatePicker = showDatePicker,
         dismissDatePicker = {
             showDatePicker = false
         },
+        yearRange = IntRange(Year.now().value - 2, Year.now().value),
+        selectableDates = object : SelectableDates {
+            override fun isSelectableDate(utcTimeMillis: Long): Boolean {
+                return utcTimeMillis <= todayMillis
+            }
+        },
         dateChange = {
             viewModel.onEvent(AddGrowthUiEvent.DataOfMeasurementChange(it))
-//            val day = it.dayOfWeek.name
-//            viewModel.onEvent(AddFeedingUiEvent.FeedingDayChanged(day))
         }
     )
 }

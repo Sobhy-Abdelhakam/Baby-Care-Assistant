@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material3.Button
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -30,7 +31,9 @@ import dev.sobhy.babycareassistant.ui.composable.CustomDatePicker
 import dev.sobhy.babycareassistant.ui.composable.CustomTextField
 import dev.sobhy.babycareassistant.ui.composable.Loader
 import java.time.LocalDate
+import java.time.Year
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddHealthInfoScreen(
     navController: NavController,
@@ -161,6 +164,7 @@ fun AddHealthInfoScreen(
                 dismissDatePicker = {
                     showDatePicker = false
                 },
+                yearRange = IntRange(Year.now().value - 1, Year.now().value + 1),
                 dateChange = dateChange
             )
         }

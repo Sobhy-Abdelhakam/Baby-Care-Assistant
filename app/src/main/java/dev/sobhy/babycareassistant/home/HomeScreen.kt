@@ -137,7 +137,7 @@ fun HomeScreen(
                 .padding(16.dp),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            IconButton(onClick = { }) {
+            IconButton(onClick = { navController.navigate(ScreenRoutes.Notification.route) }) {
                 Icon(
                     imageVector = Icons.Default.Notifications,
                     contentDescription = "Notifications",

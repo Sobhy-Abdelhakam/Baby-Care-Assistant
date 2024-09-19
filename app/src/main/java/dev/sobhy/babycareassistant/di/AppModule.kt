@@ -1,6 +1,7 @@
 package dev.sobhy.babycareassistant.di
 
 import android.content.Context
+import androidx.room.Room
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
@@ -11,6 +12,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import dev.sobhy.babycareassistant.alarm.data.repository.AlarmManagerRepositoryImpl
 import dev.sobhy.babycareassistant.alarm.domain.repository.AlarmManagerRepository
+import dev.sobhy.babycareassistant.alarm.notification.NotificationReceiver
 import dev.sobhy.babycareassistant.authentication.domain.repository.AuthRepository
 import dev.sobhy.babycareassistant.breastfeeding.data.repository.FeedingRepository
 import dev.sobhy.babycareassistant.breastfeeding.domain.usecases.DeleteFeedingUseCase
@@ -33,6 +35,9 @@ import dev.sobhy.babycareassistant.healthinfo.usecases.GetHealthInfoById
 import dev.sobhy.babycareassistant.healthinfo.usecases.GetHealthInfoUseCase
 import dev.sobhy.babycareassistant.vaccination.data.repository.VaccinationRepository
 import dev.sobhy.babycareassistant.healthinfo.usecases.SaveHealthInfoUseCase
+import dev.sobhy.babycareassistant.notification.data.local.NotificationDao
+import dev.sobhy.babycareassistant.notification.data.local.NotificationDatabase
+import dev.sobhy.babycareassistant.notification.data.repository.NotificationRepository
 import dev.sobhy.babycareassistant.sleep.data.repository.SleepRepository
 import dev.sobhy.babycareassistant.sleep.domain.usecases.DeleteSleepUseCase
 import dev.sobhy.babycareassistant.sleep.domain.usecases.GetSleepByIdUseCase
@@ -250,4 +255,27 @@ object AppModule {
     fun provideGetFeedingByIdUseCase(feedingRepository: FeedingRepository): GetFeedingByIdUseCase {
         return GetFeedingByIdUseCase(feedingRepository)
     }
+
+    @Provides
+    @Singleton
+    fun provideNotificationDatabase(@ApplicationContext appContext: Context): NotificationDatabase {
+        return Room.databaseBuilder(
+            appContext,
+            NotificationDatabase::class.java,
+            "notification_db"
+        ).build()
+    }
+
+    @Provides
+    fun provideNotificationDao(notificationDatabase: NotificationDatabase): NotificationDao {
+        return notificationDatabase.notificationDao()
+    }
+    @Provides
+    fun provideNotificationRepository(notificationDao: NotificationDao): NotificationRepository {
+        return NotificationRepository(notificationDao)
+    }
+//    @Provides
+//    fun provideNotificationReceiver(notificationRepository: NotificationRepository): NotificationReceiver {
+//        return NotificationReceiver(notificationRepository)
+//    }
 }

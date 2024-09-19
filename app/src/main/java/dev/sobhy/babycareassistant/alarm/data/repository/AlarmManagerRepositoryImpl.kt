@@ -10,6 +10,7 @@ import dev.sobhy.babycareassistant.alarm.domain.repository.AlarmManagerRepositor
 import dev.sobhy.babycareassistant.alarm.notification.NotificationReceiver
 import dev.sobhy.babycareassistant.breastfeeding.data.model.BreastFeed
 import dev.sobhy.babycareassistant.diapers.data.model.Diapers
+import dev.sobhy.babycareassistant.vaccination.data.Vaccination
 
 class AlarmManagerRepositoryImpl(
     private val context: Context,
@@ -24,6 +25,8 @@ class AlarmManagerRepositoryImpl(
                 putExtra("feedingData", alarmData.data as BreastFeed)
             else if (alarmData.data is Diapers)
                 putExtra("diaperData", alarmData.data as Diapers)
+            else if (alarmData.data is Vaccination)
+                putExtra("vaccinationData", alarmData.data as Vaccination)
 
         }
         val pendingIntent = PendingIntent.getBroadcast(
@@ -33,7 +36,7 @@ class AlarmManagerRepositoryImpl(
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
         Log.d("TAG", "scheduleAlarm: ${alarmData.timeInMillis}")
-        alarmManager.setExact(AlarmManager.RTC_WAKEUP, alarmData.timeInMillis, pendingIntent)
+        alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, alarmData.timeInMillis, pendingIntent)
     }
 
     override fun cancelAlarm(alarmId: String) {

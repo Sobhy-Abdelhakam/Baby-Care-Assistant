@@ -29,7 +29,7 @@ class VaccinationRepository(
                 .collection("vaccinations").document()
         val vaccinationWithId = vaccination.copy(id = documentReference.id)
         return documentReference.set(vaccinationWithId).addOnSuccessListener {
-//            scheduleAlarmsForVaccination(vaccinationWithId)
+            scheduleAlarmsForVaccination(vaccinationWithId)
         }
     }
 
@@ -47,14 +47,15 @@ class VaccinationRepository(
         }
         awaitClose { subscription.remove() }
     }
-//    private fun scheduleAlarmsForVaccination(vaccination: Vaccination) {
-//            val dateTemp = LocalDate.parse(vaccination.date).atStartOfDay()
-//            val alarmData = AlarmData(
-//                id = vaccination.id,
-//                title = "Vaccination Reminder",
-//                message = "It's time for vaccination ${vaccination.name}, ${vaccination.code}.",
-//                timeInMillis = dateTemp.atZone(ZoneId.systemDefault()).toEpochSecond()*1000,
-//            )
-//            alarmManagerRepository.scheduleAlarm(alarmData)
-//    }
+    private fun scheduleAlarmsForVaccination(vaccination: Vaccination) {
+            val dateTemp = LocalDate.parse(vaccination.date).atStartOfDay()
+            val alarmData = AlarmData(
+                id = vaccination.id,
+                title = "Vaccination Reminder",
+                message = "It's time for vaccination ${vaccination.name}, ${vaccination.code}.",
+                data = vaccination,
+                timeInMillis = dateTemp.atZone(ZoneId.systemDefault()).toEpochSecond()*1000,
+            )
+            alarmManagerRepository.scheduleAlarm(alarmData)
+    }
 }

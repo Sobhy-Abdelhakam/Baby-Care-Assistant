@@ -18,6 +18,7 @@ import dev.sobhy.babycareassistant.healthinfo.HealthInfoScreen
 import dev.sobhy.babycareassistant.healthinfo.addhealthinfo.AddHealthInfoScreen
 import dev.sobhy.babycareassistant.healthinfo.data.model.HealthInfo
 import dev.sobhy.babycareassistant.home.HomeScreen
+import dev.sobhy.babycareassistant.notification.NotificationScreen
 import dev.sobhy.babycareassistant.profile.ProfileScreen
 import dev.sobhy.babycareassistant.sleep.BabySleepScreen
 import dev.sobhy.babycareassistant.sleep.add.AddSleepScreen
@@ -124,6 +125,9 @@ fun NavigationGraph(
         }
         composable(ScreenRoutes.Profile.route) {
             ProfileScreen(navController)
+        }
+        composable(ScreenRoutes.Notification.route){
+            NotificationScreen(navController)
         }
     }
 }

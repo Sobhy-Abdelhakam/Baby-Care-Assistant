@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.ClickableText
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CalendarMonth
 import androidx.compose.material3.Button
@@ -149,27 +150,9 @@ fun AddFeedScreen(
             )
         }
         item {
-            CustomTextField(
-                value = state.amountOfFeedingPerTime,
-                onValueChange = { text ->
-                    viewModel.onEvent(
-                        AddFeedingUiEvent.AmountOfMilkChanged(
-                            text.filter { symbol ->
-                                symbol.isDigit()
-                            }
-                        )
-                    )
-                },
-                label = "Amount of milk per time",
-                placeHolder = "Ex: 50mm",
-                keyboardType = KeyboardType.Decimal,
-                errorText = state.amountPerTimeError
-            )
-        }
-        item {
             if (state.numOfFeedingPerDay.isNotBlank()) {
                 if (state.numOfFeedingPerDay.toInt() > 0) {
-                    state.timesValues.forEachIndexed { index, value ->
+                    state.feedingTimes.forEachIndexed { index, value ->
                         Text(
                             text = "Time ${index + 1}",
                             modifier = Modifier
@@ -178,10 +161,10 @@ fun AddFeedScreen(
                             textAlign = TextAlign.Center
                         )
                         OutlinedTextField(
-                            value = if (value == LocalTime.of(0, 0, 30)) {
+                            value = if (value.feedingTime == LocalTime.of(0, 0, 30)) {
                                 ""
                             } else {
-                                value.format(DateTimeFormatter.ofPattern("hh:mm a"))
+                                value.feedingTime.format(DateTimeFormatter.ofPattern("hh:mm a"))
                             },
                             onValueChange = { },
                             readOnly = true,
@@ -207,6 +190,28 @@ fun AddFeedScreen(
                                     indexOfTimeTextField = index
                                 }
                             }
+                        )
+                        OutlinedTextField(
+                            value = value.amountOfMilk,
+                            onValueChange = {text ->
+                                viewModel.onEvent(
+                                    AddFeedingUiEvent.UpdateAmountFieldsValues(
+                                        index,
+                                        text.filter { symbol ->
+                                            symbol.isDigit()
+                                        }
+                                    )
+                                )
+                            },
+                            label = {
+                                Text(text = "Amount of milk")
+                            },
+                            placeholder = {
+                                Text(text = "EX: 50mm")
+                            },
+                            keyboardOptions = KeyboardOptions(
+                                keyboardType = KeyboardType.Decimal
+                            )
                         )
                     }
                 }

@@ -93,8 +93,8 @@ fun DiaperItem(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Text(text = "Date: $diaperDate, $diaperDay")
-            Row {
+            Text(text = "Date: $diaperDate, $diaperDay", modifier = Modifier.weight(3f))
+            Row(modifier = Modifier.weight(1f), horizontalArrangement = Arrangement.End) {
                 IconButton(
                     onClick = editButtonClick,
                     modifier= Modifier

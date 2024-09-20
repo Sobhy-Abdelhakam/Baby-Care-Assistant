@@ -70,9 +70,9 @@ class MainActivity : ComponentActivity() {
                                 is Diapers -> it.numberOfDiapersChange.toString()
                                 else -> ""
                             },
-                            amountOfMilk = if (it is BreastFeed) "${it.amountOfMilkPerTime} mm" else null,
+                            amountOfMilk = null,
                             timesOfTimes = when (it) {
-                                is BreastFeed -> it.timeOfTimes
+                                is BreastFeed -> it.timeOfTimes.map { it.time }
                                 is Diapers -> it.timesOfDiapersChange
                                 else -> emptyList()
                             },

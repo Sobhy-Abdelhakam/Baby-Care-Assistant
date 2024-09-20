@@ -67,7 +67,7 @@ class FeedingRepository(
     private fun scheduleAlarmsForBreastFeed(breastFeed: BreastFeed) {
         breastFeed.timeOfTimes.forEachIndexed { index, feedingTime ->
             val dateTemp = LocalDate.parse(breastFeed.date)
-            val timeTemp = LocalTime.parse(feedingTime)
+            val timeTemp = LocalTime.parse(feedingTime.time)
             val dateTimeTemp = LocalDateTime.of(dateTemp, timeTemp)
             val alarmData = AlarmData(
                 id = breastFeed.id,

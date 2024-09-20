@@ -9,6 +9,12 @@ data class BreastFeed(
     val date: String = "",
     val day: String = "",
     val numberOfFeedingsPerDay : Int = 0,
-    val amountOfMilkPerTime: Int = 0,
-    val timeOfTimes: List<String> = emptyList()
+//    val amountOfMilkPerTime: Int = 0,
+    val timeOfTimes: List<FeedingTimes> = emptyList()
 ) : Parcelable
+
+@Parcelize
+data class FeedingTimes(
+    val time: String = "",
+    val amountOfMilk: Int = 0
+): Parcelable

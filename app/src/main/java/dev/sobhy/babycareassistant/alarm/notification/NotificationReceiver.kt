@@ -40,7 +40,7 @@ class NotificationReceiver: BroadcastReceiver() {
                 val timeIndex = intent.getIntExtra("timeIndex", 0)
                 diaper?.let {
                     storeNotificationInDatabase("It's time to change diaper", "time: $timeIndex: ${it.timesOfDiapersChange[timeIndex]}")
-                    sendNotification(context, "It's time for diaper change number: $timeIndex", it)
+                    sendNotification(context, "It's time for diaper change number: ${timeIndex+1}", it, timeIndex)
                 }
                 }
             "feeding" -> {
@@ -48,7 +48,7 @@ class NotificationReceiver: BroadcastReceiver() {
                 val timeIndex = intent.getIntExtra("timeIndex", 0)
                 feeding?.let {
                     storeNotificationInDatabase("It's feeding time", "Amount of milk ${it.timeOfTimes[timeIndex].amountOfMilk}")
-                    sendNotification(context, "It's time for feeding number: $timeIndex", it)
+                    sendNotification(context, "It's time for feeding number: ${timeIndex+1}", it, timeIndex)
                 }
             }
         }
@@ -63,12 +63,13 @@ class NotificationReceiver: BroadcastReceiver() {
             notificationRepository.saveNotification(notificationEntity)
         }
     }
-    private fun sendNotification(context: Context, content: String, data: Parcelable){
+    private fun sendNotification(context: Context, content: String, data: Parcelable, timeIndex: Int? = null,){
         Log.d("NotificationReceiver", "sendNotification: $data")
         val notificationIntent = Intent(context, MainActivity::class.java).apply {
             action = Intent.ACTION_MAIN
             addCategory(Intent.CATEGORY_LAUNCHER)
             putExtra("notificationData", data)
+            putExtra("timeIndex", timeIndex)
         }
         val pendingIntent = PendingIntent.getActivity(
             context,

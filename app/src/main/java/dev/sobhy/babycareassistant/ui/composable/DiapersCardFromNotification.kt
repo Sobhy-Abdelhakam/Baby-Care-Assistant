@@ -27,12 +27,15 @@ import java.time.format.DateTimeFormatter
 @Composable
 fun DiapersCardFromNotification(
     diapers: Diapers,
+    indexOfColorChange: Int,
     later: () -> Unit,
     done: () -> Unit
 ) {
     Card(
         shape = MaterialTheme.shapes.small,
-        colors = CardDefaults.outlinedCardColors(),
+        colors = CardDefaults.outlinedCardColors(
+            containerColor = Color.White
+        ),
         border = BorderStroke(1.dp, color = Color.Gray),
         modifier = Modifier
             .fillMaxWidth()
@@ -67,7 +70,10 @@ fun DiapersCardFromNotification(
                     LocalTime.parse(time).format(DateTimeFormatter.ofPattern("hh:mm a"))
                 Row {
                     Text(text = "Time ${index + 1}    ", color = Color.Gray)
-                    Text(text = timeFormat)
+                    Text(
+                        text = timeFormat,
+                        color = if (index == indexOfColorChange) Color.Green else Color.Unspecified
+                    )
                 }
             }
         }

@@ -26,6 +26,7 @@ import java.time.format.DateTimeFormatter
 @Composable
 fun FeedingCardFromNotification(
     breastFeed: BreastFeed,
+    indexOfColorChange: Int,
     later: () -> Unit,
     done: () -> Unit
 ) {
@@ -78,7 +79,7 @@ fun FeedingCardFromNotification(
             ) {
                 Text(
                     text = "Time ${index + 1}",
-                    color = Color.Gray,
+                    color = if (index == indexOfColorChange) Color.Green else Color.Gray,
                     textAlign = TextAlign.Center,
                     modifier = Modifier.fillMaxWidth()
                 )

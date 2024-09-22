@@ -33,6 +33,7 @@ import javax.inject.Inject
 class MainActivity : ComponentActivity() {
     private val auth: FirebaseAuth = FirebaseAuth.getInstance()
     private var notificationData: Parcelable? = null
+    private var timeIndex: Int? = null
 
     @Inject
     lateinit var vaccinationRepository: VaccinationRepository
@@ -41,7 +42,8 @@ class MainActivity : ComponentActivity() {
         installSplashScreen()
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        notificationData = intent?.getParcelableExtra<Parcelable>("notificationData")
+        notificationData = intent?.getParcelableExtra("notificationData")
+        timeIndex = intent?.getIntExtra("timeIndex", -1)
 
         setContent {
             BabyCareAssistantTheme {
@@ -81,12 +83,14 @@ class MainActivity : ComponentActivity() {
 
                             is BreastFeed -> FeedingCardFromNotification(
                                 breastFeed = data,
+                                indexOfColorChange = timeIndex!!,
                                 later = { showDialog = false }) {
                                 showDialog = false
                             }
 
                             is Diapers -> DiapersCardFromNotification(
                                 diapers = data,
+                                indexOfColorChange = timeIndex!!,
                                 later = { showDialog = false }) {
                                 showDialog = false
                             }

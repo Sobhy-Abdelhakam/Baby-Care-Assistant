@@ -399,8 +399,12 @@ fun RegisterScreen(
                 }
             }
         }
+
         val today = LocalDate.now()
-        val todayMillis = today.atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli()
+        val todayMillis = today.plusDays(1)
+            .atStartOfDay(ZoneId.systemDefault())
+            .toInstant()
+            .toEpochMilli()
         CustomDatePicker(
             showDatePicker = showDatePicker,
             dismissDatePicker = {

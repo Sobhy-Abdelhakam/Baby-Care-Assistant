@@ -32,7 +32,9 @@ fun FeedingCardFromNotification(
 ) {
     Card(
         shape = MaterialTheme.shapes.small,
-        colors = CardDefaults.outlinedCardColors(),
+        colors = CardDefaults.outlinedCardColors(
+            containerColor = Color.White
+        ),
         border = BorderStroke(1.dp, color = Color.Gray),
         modifier = Modifier
             .fillMaxWidth()

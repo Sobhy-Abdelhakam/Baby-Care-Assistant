@@ -39,7 +39,7 @@ class NotificationReceiver: BroadcastReceiver() {
                 val diaper = intent.getParcelableExtra<Diapers>("data")
                 val timeIndex = intent.getIntExtra("timeIndex", 0)
                 diaper?.let {
-                    storeNotificationInDatabase("It's time to change diaper", "time: $timeIndex: ${it.timesOfDiapersChange[timeIndex]}")
+                    storeNotificationInDatabase("It's time to change diaper", "time: ${timeIndex+1}: ${it.timesOfDiapersChange[timeIndex]}")
                     sendNotification(context, "It's time for diaper change number: ${timeIndex+1}", it, timeIndex)
                 }
                 }

@@ -57,6 +57,9 @@ object AlarmManagerHelper {
             context, requestCode, intent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
         Log.d("AlarmManagerHelper", "scheduleAlarm: $time")
+        if (System.currentTimeMillis() > time){
+            return
+        }
         alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, time, pendingIntent)
     }
 }

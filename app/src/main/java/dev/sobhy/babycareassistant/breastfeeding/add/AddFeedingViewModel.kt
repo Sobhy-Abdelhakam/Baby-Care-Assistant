@@ -77,38 +77,18 @@ class AddFeedingViewModel @Inject constructor(
         }
     }
 
-    fun addOrUpdateFeeding(id: String?) {
+    private fun addOrUpdateFeeding(id: String?) {
         val breastFeedingState = addFeedingState.value
-        val errors = mapOf(
-            "dateError" to breastFeedingState.feedingDate.isEqual(LocalDate.of(1000, 1, 1)),
-            "numberOfFeedingPerDayError" to breastFeedingState.numOfFeedingPerDay.isBlank(),
-        ).filterValues { it }
-        if (errors.isNotEmpty()) {
-            _addFeedingState.update {
-                it.copy(
-                    dateError = if (errors["dateError"] == true) "Date is required" else null,
-                    numberOfFeedingPerDayError = if (errors["numberOfFeedingPerDayError"] == true) "number of feeding per day is required" else null,
-                )
-            }
-            return
-        }
-        if (breastFeedingState.feedingTimes.any { it == FeedingTimeData(LocalTime.of(0,0,30), "") }){
-            _addFeedingState.update {
-                it.copy(error = "All time and amount fields are required")
-            }
-            return
-        }
+
+        // Validate inputs
+        if (!validateFeedingData(breastFeedingState)) return
+
         _addFeedingState.update { it.copy(loading = true) }
-        viewModelScope.launch(Dispatchers.IO) {
-            val breastFeed = BreastFeed(
-                id = id ?: "",
-                date = breastFeedingState.feedingDate.toString(),
-                day = breastFeedingState.feedingDay,
-                numberOfFeedingsPerDay = breastFeedingState.numOfFeedingPerDay.toInt(),
-//                amountOfMilkPerTime = breastFeedingState.amountOfFeedingPerTime.toInt(),
-                timeOfTimes = breastFeedingState.feedingTimes.map { FeedingTimes(it.feedingTime.toString(), it.amountOfMilk.toInt()) }
-//                breastFeedingState.timesValues.map { it.toString() }
-            )
+
+        val breastFeed = createBreastFeed(id, breastFeedingState)
+
+        // Perform save operation
+        viewModelScope.launch {
             saveFeedingUseCase(breastFeed)
                 .addOnSuccessListener {
                     _addFeedingState.update { it.copy(loading = false, success = true) }
@@ -118,6 +98,44 @@ class AddFeedingViewModel @Inject constructor(
                 }
         }
     }
+
+    private fun validateFeedingData(state: AddBreastFeedState): Boolean {
+        // Validate fields and return early if there are errors
+        val errors = mapOf(
+            "dateError" to state.feedingDate.isEqual(LocalDate.of(1000, 1, 1)),
+            "numberOfFeedingPerDayError" to state.numOfFeedingPerDay.isBlank(),
+        ).filterValues { it }
+
+        if (errors.isNotEmpty()) {
+            _addFeedingState.update {
+                it.copy(
+                    dateError = if (errors["dateError"] == true) "Date is required" else null,
+                    numberOfFeedingPerDayError = if (errors["numberOfFeedingPerDayError"] == true) "Number of feeding per day is required" else null,
+                )
+            }
+            return false
+        }
+
+        // Validate feeding times
+        if (state.feedingTimes.any { it.feedingTime == LocalTime.MIDNIGHT || it.amountOfMilk.isBlank() }) {
+            _addFeedingState.update { it.copy(error = "All time and amount fields are required") }
+            return false
+        }
+
+        return true
+    }
+
+    private fun createBreastFeed(id: String?, state: AddBreastFeedState): BreastFeed {
+        return BreastFeed(
+            id = id ?: "",
+            date = state.feedingDate.toString(),
+            day = state.feedingDay,
+            numberOfFeedingsPerDay = state.numOfFeedingPerDay.toInt(),
+            timeOfTimes = state.feedingTimes.map { FeedingTimes(it.feedingTime.toString(), it.amountOfMilk.toInt()) }
+        )
+    }
+
+
 
     fun getFeedingById(id: String) {
         _addFeedingState.update { it.copy(loading = true) }
@@ -129,8 +147,6 @@ class AddFeedingViewModel @Inject constructor(
                         feedingDate = LocalDate.parse(breastFeed.date),
                         feedingDay = breastFeed.day,
                         numOfFeedingPerDay = breastFeed.numberOfFeedingsPerDay.toString(),
-//                        timesValues = breastFeed.timeOfTimes.map { time -> LocalTime.parse(time) },
-//                        amountOfFeedingPerTime = breastFeed.amountOfMilkPerTime.toString(),
                         feedingTimes = breastFeed.timeOfTimes.map { time ->
                             FeedingTimeData(LocalTime.parse(time.time), time.amountOfMilk.toString())
                         },

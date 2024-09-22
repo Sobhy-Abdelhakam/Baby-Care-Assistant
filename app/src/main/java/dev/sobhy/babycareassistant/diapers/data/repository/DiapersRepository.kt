@@ -1,6 +1,7 @@
 package dev.sobhy.babycareassistant.diapers.data.repository
 
 import android.content.Context
+import android.util.Log
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -14,7 +15,7 @@ import kotlinx.coroutines.tasks.await
 class DiapersRepository(
     private val firebaseAuth: FirebaseAuth,
     private val firestore: FirebaseFirestore,
-    private val context: Context
+    private val context: Context,
 ) {
     fun saveOrUpdateDiapers(diapers: Diapers): Task<Void> {
         val diapersCollection =
@@ -37,6 +38,7 @@ class DiapersRepository(
             }
         }
     }
+
     suspend fun getDiapers(): Flow<List<Diapers>> = callbackFlow {
         val collectionRef = firestore.collection("users")
             .document(firebaseAuth.currentUser!!.uid)
@@ -51,6 +53,7 @@ class DiapersRepository(
         }
         awaitClose { subscription.remove() }
     }
+
     suspend fun deleteDiapers(diapersId: String) {
         firestore.collection("users").document(firebaseAuth.currentUser!!.uid)
             .collection("diapers").document(diapersId).delete().await()
@@ -61,5 +64,37 @@ class DiapersRepository(
             .document(firebaseAuth.currentUser!!.uid)
             .collection("diapers").document(diapersId).get().await()
         return snapshot.toObject(Diapers::class.java)
+    }
+
+    fun updateDiaperChangeTimeFromNotification(
+        diapersId: String,
+        index: Int,
+        newTime: String,
+    ) {
+        val documentReference =
+            firestore.collection("users").document(firebaseAuth.currentUser!!.uid)
+                .collection("diapers").document(diapersId)
+        documentReference.get().addOnSuccessListener { document ->
+            if (document != null && document.exists()) {
+                val timesArray = document.get("timesOfDiapersChange") as? MutableList<String>
+                // ensure the array and index are valid
+                if (timesArray != null && timesArray.size > index) {
+                    timesArray[index] = newTime
+                    documentReference.update("timesOfDiapersChange", timesArray)
+                        .addOnSuccessListener {
+                            Log.d("Firestore", "Document successfully updated!")
+                        }
+                        .addOnFailureListener { e ->
+                            Log.w("Firestore", "Error updating document", e)
+                        }
+                } else {
+                    Log.w("Firestore", "Array or index is invalid")
+                }
+            } else {
+                Log.w("Firestore", "Document does not exist")
+            }
+        }.addOnFailureListener { e ->
+            Log.w("Firestore", "Error getting document", e)
+        }
     }
 }

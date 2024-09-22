@@ -22,13 +22,15 @@ import dev.sobhy.babycareassistant.vaccination.data.Vaccination
 @Composable
 fun VaccinationCardFromNotification(
     vaccination: Vaccination,
-    done: () -> Unit
+    modifier: Modifier = Modifier,
+    done: () -> Unit,
 ) {
     Card(
         shape = MaterialTheme.shapes.extraSmall,
         border = BorderStroke(1.dp, color = Color.Gray),
         elevation = CardDefaults.cardElevation(4.dp),
-        modifier = Modifier
+        modifier = modifier
+            .padding(8.dp)
             .fillMaxWidth()
             .padding(4.dp),
     ) {

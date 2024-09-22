@@ -27,6 +27,7 @@ import java.time.format.DateTimeFormatter
 fun FeedingCardFromNotification(
     breastFeed: BreastFeed,
     indexOfColorChange: Int,
+    modifier: Modifier = Modifier,
     later: () -> Unit,
     done: () -> Unit
 ) {
@@ -36,7 +37,8 @@ fun FeedingCardFromNotification(
             containerColor = Color.White
         ),
         border = BorderStroke(1.dp, color = Color.Gray),
-        modifier = Modifier
+        modifier = modifier
+            .padding(8.dp)
             .fillMaxWidth()
             .padding(4.dp),
     ) {

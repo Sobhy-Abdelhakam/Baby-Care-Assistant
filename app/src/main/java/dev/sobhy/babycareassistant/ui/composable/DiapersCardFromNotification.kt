@@ -28,6 +28,7 @@ import java.time.format.DateTimeFormatter
 fun DiapersCardFromNotification(
     diapers: Diapers,
     indexOfColorChange: Int,
+    modifier: Modifier = Modifier,
     later: () -> Unit,
     done: () -> Unit
 ) {
@@ -37,9 +38,10 @@ fun DiapersCardFromNotification(
             containerColor = Color.White
         ),
         border = BorderStroke(1.dp, color = Color.Gray),
-        modifier = Modifier
+        modifier = modifier
+            .padding(8.dp)
             .fillMaxWidth()
-            .padding(2.dp),
+            .padding(4.dp),
     ) {
         Text(text = "Date: ${diapers.date}, ${diapers.day}", modifier = Modifier.padding(8.dp))
         Row(

@@ -6,6 +6,7 @@ plugins {
     id ("kotlin-parcelize")
     id("kotlin-kapt")
     id("com.google.dagger.hilt.android")
+    id("com.google.firebase.crashlytics")
 }
 
 android {
@@ -87,6 +88,10 @@ dependencies {
     // Hilt Navigation Compose
     implementation(libs.androidx.hilt.navigation.compose)
     // firebase
+    // Import the BoM for the Firebase platform
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.crashlytics)
+    implementation(libs.firebase.analytics)
     implementation(libs.firebase.auth)
     implementation(libs.firebase.firestore)
     implementation(libs.firebase.storage)
@@ -94,14 +99,13 @@ dependencies {
     implementation(libs.coil.compose)
     // Gson converter
     implementation (libs.converter.gson)
-    val room_version = "2.6.1"
 
-    implementation("androidx.room:room-runtime:$room_version")
-    annotationProcessor("androidx.room:room-compiler:$room_version")
+    implementation(libs.androidx.room.runtime)
+    annotationProcessor(libs.androidx.room.compiler)
     // To use Kotlin annotation processing tool (kapt)
-    kapt("androidx.room:room-compiler:$room_version")
+    kapt("androidx.room:room-compiler:2.6.1")
     // optional - Kotlin Extensions and Coroutines support for Room
-    implementation("androidx.room:room-ktx:$room_version")
+    implementation(libs.androidx.room.ktx)
 }
 kapt {
     correctErrorTypes = true

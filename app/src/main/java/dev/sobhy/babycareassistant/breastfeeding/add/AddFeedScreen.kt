@@ -1,6 +1,7 @@
 package dev.sobhy.babycareassistant.breastfeeding.add
 
 import android.util.Log
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -153,66 +154,76 @@ fun AddFeedScreen(
             if (state.numOfFeedingPerDay.isNotBlank()) {
                 if (state.numOfFeedingPerDay.toInt() > 0) {
                     state.feedingTimes.forEachIndexed { index, value ->
-                        Text(
-                            text = "Time ${index + 1}",
+                        Column(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(6.dp),
-                            textAlign = TextAlign.Center
-                        )
-                        OutlinedTextField(
-                            value = if (value.feedingTime == LocalTime.of(0, 0, 30)) {
-                                ""
-                            } else {
-                                value.feedingTime.format(DateTimeFormatter.ofPattern("hh:mm a"))
-                            },
-                            onValueChange = { },
-                            readOnly = true,
-                            label = {
-                                Text(text = "Time")
-                            },
-                            placeholder = {
-                                Text(text = "6:30 AM")
-                            },
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 6.dp),
-                            trailingIcon = {
-                                ClickableText(
-                                    text = AnnotatedString("Set time"),
-                                    style = TextStyle(
-                                        color = MaterialTheme.colorScheme.primary,
-                                        fontWeight = FontWeight.Bold
-                                    ),
-                                    modifier = Modifier.padding(16.dp)
-                                ) {
-                                    showTimePicker = true
-                                    indexOfTimeTextField = index
-                                }
-                            }
-                        )
-                        OutlinedTextField(
-                            value = value.amountOfMilk,
-                            onValueChange = {text ->
-                                viewModel.onEvent(
-                                    AddFeedingUiEvent.UpdateAmountFieldsValues(
-                                        index,
-                                        text.filter { symbol ->
-                                            symbol.isDigit()
-                                        }
-                                    )
-                                )
-                            },
-                            label = {
-                                Text(text = "Amount of milk")
-                            },
-                            placeholder = {
-                                Text(text = "EX: 50mm")
-                            },
-                            keyboardOptions = KeyboardOptions(
-                                keyboardType = KeyboardType.Decimal
+                                .padding(vertical = 8.dp)
+                        ) {
+                            Text(
+                                text = "Time ${index + 1}",
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(2.dp),
+                                textAlign = TextAlign.Center
                             )
-                        )
+                            OutlinedTextField(
+                                value = if (value.feedingTime == LocalTime.of(0, 0, 30)) {
+                                    ""
+                                } else {
+                                    value.feedingTime.format(DateTimeFormatter.ofPattern("hh:mm a"))
+                                },
+                                onValueChange = { },
+                                readOnly = true,
+                                label = {
+                                    Text(text = "Time")
+                                },
+                                placeholder = {
+                                    Text(text = "6:30 AM")
+                                },
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = 2.dp),
+                                trailingIcon = {
+                                    ClickableText(
+                                        text = AnnotatedString("Set time"),
+                                        style = TextStyle(
+                                            color = MaterialTheme.colorScheme.primary,
+                                            fontWeight = FontWeight.Bold
+                                        ),
+                                        modifier = Modifier.padding(16.dp)
+                                    ) {
+                                        showTimePicker = true
+                                        indexOfTimeTextField = index
+                                    }
+                                }
+                            )
+
+                            OutlinedTextField(
+                                value = value.amountOfMilk,
+                                onValueChange = { text ->
+                                    viewModel.onEvent(
+                                        AddFeedingUiEvent.UpdateAmountFieldsValues(
+                                            index,
+                                            text.filter { symbol ->
+                                                symbol.isDigit()
+                                            }
+                                        )
+                                    )
+                                },
+                                label = {
+                                    Text(text = "Amount of milk")
+                                },
+                                placeholder = {
+                                    Text(text = "EX: 50mm")
+                                },
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = 2.dp),
+                                keyboardOptions = KeyboardOptions(
+                                    keyboardType = KeyboardType.Decimal
+                                )
+                            )
+                        }
                     }
                 }
             }

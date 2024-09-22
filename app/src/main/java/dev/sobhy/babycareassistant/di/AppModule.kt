@@ -10,9 +10,6 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import dev.sobhy.babycareassistant.alarm.data.repository.AlarmManagerRepositoryImpl
-import dev.sobhy.babycareassistant.alarm.domain.repository.AlarmManagerRepository
-import dev.sobhy.babycareassistant.alarm.notification.NotificationReceiver
 import dev.sobhy.babycareassistant.authentication.domain.repository.AuthRepository
 import dev.sobhy.babycareassistant.breastfeeding.data.repository.FeedingRepository
 import dev.sobhy.babycareassistant.breastfeeding.domain.usecases.DeleteFeedingUseCase
@@ -64,12 +61,6 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideAlarmManagerRepository(@ApplicationContext context: Context): AlarmManagerRepository {
-        return AlarmManagerRepositoryImpl(context)
-    }
-
-    @Provides
-    @Singleton
     fun provideAuthRepository(
         auth: FirebaseAuth,
         firestore: FirebaseFirestore,
@@ -86,12 +77,12 @@ object AppModule {
     fun provideVaccineRepo(
         auth: FirebaseAuth,
         firestore: FirebaseFirestore,
-        alarmManagerRepository: AlarmManagerRepository
+        @ApplicationContext context: Context,
     ) : VaccinationRepository {
         return VaccinationRepository(
             firebaseAuth = auth,
             firestore = firestore,
-            alarmManagerRepository = alarmManagerRepository
+            context = context
         )
     }
     @Provides
@@ -165,9 +156,9 @@ object AppModule {
     fun provideDiapersRepository(
         auth: FirebaseAuth,
         firestore: FirebaseFirestore,
-        alarmManagerRepository: AlarmManagerRepository
+        @ApplicationContext context: Context,
     ): DiapersRepository{
-        return DiapersRepository(auth, firestore, alarmManagerRepository)
+        return DiapersRepository(auth, firestore, context)
     }
     @Provides
     @Singleton
@@ -227,12 +218,12 @@ object AppModule {
     fun provideFeedingRepository(
         auth: FirebaseAuth,
         firestore: FirebaseFirestore,
-        alarmManagerRepository: AlarmManagerRepository
+        @ApplicationContext context: Context,
     ): FeedingRepository{
         return FeedingRepository(
             firebaseAuth = auth,
             firestore = firestore,
-            alarmManagerRepository = alarmManagerRepository
+            context = context
         )
     }
     @Provides
@@ -274,8 +265,4 @@ object AppModule {
     fun provideNotificationRepository(notificationDao: NotificationDao): NotificationRepository {
         return NotificationRepository(notificationDao)
     }
-//    @Provides
-//    fun provideNotificationReceiver(notificationRepository: NotificationRepository): NotificationReceiver {
-//        return NotificationReceiver(notificationRepository)
-//    }
 }

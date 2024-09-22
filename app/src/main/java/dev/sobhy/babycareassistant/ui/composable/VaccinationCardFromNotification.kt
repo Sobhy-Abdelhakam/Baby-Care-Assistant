@@ -1,4 +1,4 @@
-package dev.sobhy.babycareassistant.vaccination
+package dev.sobhy.babycareassistant.ui.composable
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -7,92 +7,32 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavController
-import dev.sobhy.babycareassistant.navigation.ScreenRoutes
-import dev.sobhy.babycareassistant.ui.composable.FeaturesScreenContent
+import dev.sobhy.babycareassistant.vaccination.data.Vaccination
 
 @Composable
-fun VaccinationScreen(
-    navController: NavController,
-    viewModel: VaccinationViewModel = hiltViewModel(),
-) {
-    val state by viewModel.vaccinations.collectAsState()
-    FeaturesScreenContent(
-        isLoading = state.loading,
-        data = state.data,
-        errorMessage = state.error,
-        screenTitle = "Vaccinations",
-        buttonText = "Add Vaccination Data",
-        itemContent = {
-            VaccineItem(
-                vaccineName = it.name,
-                date = it.date,
-                day = it.day,
-                code = it.code,
-                ageGroup = it.ageGroup,
-                reason = it.reason,
-                notes = it.notes,
-                status = it.done
-            )
-        },
-        emptyMessage = "No vaccinations found.",
-        addButtonClick = {
-                         navController.navigate(ScreenRoutes.AddVaccination.route)
-                         },
-        backButtonClick = {
-            navController.popBackStack()
-        })
-
-}
-
-@Composable
-fun VaccineItem(
-    vaccineName: String,
-    date: String,
-    day: String,
-    code: String,
-    ageGroup: String,
-    reason: String,
-    notes: String,
-    status: Boolean,
-    modifier: Modifier = Modifier,
+fun VaccinationCardFromNotification(
+    vaccination: Vaccination,
+    done: () -> Unit
 ) {
     Card(
         shape = MaterialTheme.shapes.extraSmall,
-        colors = CardDefaults.outlinedCardColors(),
         border = BorderStroke(1.dp, color = Color.Gray),
-        modifier = modifier
+        elevation = CardDefaults.cardElevation(4.dp),
+        modifier = Modifier
             .fillMaxWidth()
             .padding(4.dp),
     ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(8.dp),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Text(text = vaccineName, modifier = Modifier.padding(2.dp))
-            if (status) {
-                Icon(
-                    imageVector = Icons.Filled.CheckCircle,
-                    contentDescription = "", tint = Color(0xFF68D275)
-                )
-            }
-        }
+        Text(text = vaccination.name, modifier = Modifier.padding(8.dp))
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -106,7 +46,7 @@ fun VaccineItem(
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Text(text = "Date", color = Color.Gray)
-            Text(text = "$date, $day")
+            Text(text = "${vaccination.date}, ${vaccination.day}")
         }
         Row(
             modifier = Modifier
@@ -121,7 +61,7 @@ fun VaccineItem(
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Text(text = "Code", color = Color.Gray)
-            Text(text = code)
+            Text(text = vaccination.code)
         }
         Row(
             modifier = Modifier
@@ -136,7 +76,7 @@ fun VaccineItem(
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Text(text = "Age Group", color = Color.Gray)
-            Text(text = ageGroup)
+            Text(text = vaccination.ageGroup)
         }
         Column(
             modifier = Modifier.padding(8.dp)
@@ -146,16 +86,24 @@ fun VaccineItem(
                 color = Color.Gray,
                 modifier = Modifier.padding(2.dp)
             )
-            Text(text = reason, modifier = Modifier.padding(2.dp))
+            Text(text = vaccination.reason, modifier = Modifier.padding(2.dp))
         }
-        if (notes.isNotEmpty()){
+        if (vaccination.notes.isNotEmpty()) {
             Column(
                 modifier = Modifier.padding(8.dp)
             ) {
                 Text(text = "Other notes:", color = Color.Gray, modifier = Modifier.padding(2.dp))
-                Text(text = notes, modifier = Modifier.padding(2.dp))
+                Text(text = vaccination.notes, modifier = Modifier.padding(2.dp))
             }
         }
-
+        Button(
+            onClick = done,
+            modifier = Modifier
+                .padding(8.dp)
+                .align(Alignment.CenterHorizontally),
+            shape = MaterialTheme.shapes.small
+        ) {
+            Text(text = "Done")
+        }
     }
 }

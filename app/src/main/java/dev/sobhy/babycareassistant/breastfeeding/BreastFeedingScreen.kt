@@ -200,7 +200,7 @@ fun BreastFeedingItem(
                     horizontalArrangement = Arrangement.SpaceBetween
                 ){
                     Text(text = "Amount of milk", color = Color.Gray)
-                    Text(text = time.amountOfMilk.toString())
+                    Text(text = "${time.amountOfMilk}mm")
                 }
             }
         }

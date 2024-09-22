@@ -1,15 +1,12 @@
 package dev.sobhy.babycareassistant.alarm.notification
 
-import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import android.os.Build
-import android.os.Bundle
+import android.os.Parcelable
 import android.util.Log
-import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import dagger.hilt.android.AndroidEntryPoint
 import dev.sobhy.babycareassistant.MainActivity
@@ -18,72 +15,76 @@ import dev.sobhy.babycareassistant.breastfeeding.data.model.BreastFeed
 import dev.sobhy.babycareassistant.diapers.data.model.Diapers
 import dev.sobhy.babycareassistant.notification.data.repository.NotificationRepository
 import dev.sobhy.babycareassistant.notification.domain.NotificationEntity
+import dev.sobhy.babycareassistant.vaccination.data.Vaccination
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-import kotlin.random.Random
 
 @AndroidEntryPoint
 class NotificationReceiver: BroadcastReceiver() {
     @Inject lateinit var notificationRepository: NotificationRepository
-    override fun onReceive(context: Context?, intent: Intent?) {
-        val title = intent?.getStringExtra("title") ?: "No title"
-        val message = intent?.getStringExtra("message")?: "No message"
+    override fun onReceive(context: Context, intent: Intent) {
+        val type = intent.getStringExtra("type")
+        Log.d("NotificationReceiver", "onReceive: $type")
+        when(type){
+            "vaccination" -> {
+                val vaccination = intent.getParcelableExtra<Vaccination>("data")
+                vaccination?.let {
+                    storeNotificationInDatabase("It's time to vaccination", "${vaccination.name} ${vaccination.code}")
+                    sendNotification(context, "It's time for vaccination: ${vaccination.name}", it)
+                }
+            }
+            "diaper" -> {
+                val diaper = intent.getParcelableExtra<Diapers>("data")
+                val timeIndex = intent.getIntExtra("timeIndex", 0)
+                diaper?.let {
+                    storeNotificationInDatabase("It's time to change diaper", "time: $timeIndex: ${it.timesOfDiapersChange[timeIndex]}")
+                    sendNotification(context, "It's time for diaper change number: $timeIndex", it)
+                }
+                }
+            "feeding" -> {
+                val feeding = intent.getParcelableExtra<BreastFeed>("data")
+                val timeIndex = intent.getIntExtra("timeIndex", 0)
+                feeding?.let {
+                    storeNotificationInDatabase("It's feeding time", "Amount of milk ${it.timeOfTimes[timeIndex].amountOfMilk}")
+                    sendNotification(context, "It's time for feeding number: $timeIndex", it)
+                }
+            }
+        }
+    }
+    private fun storeNotificationInDatabase(title: String, message: String){
         val notificationEntity = NotificationEntity(
             title = title,
             message = message,
             timestamp = System.currentTimeMillis()
         )
-        // store notification in database
         CoroutineScope(Dispatchers.IO).launch {
             notificationRepository.saveNotification(notificationEntity)
         }
-        val feedingData = intent?.getParcelableExtra<BreastFeed>("feedingData")
-        val diaperData = intent?.getParcelableExtra<Diapers>("diaperData")
-        val vaccinationData = intent?.getParcelableExtra<Diapers>("vaccinationData")
-
-        context?.let {ctx ->
-            val notificationIntent = Intent(ctx, MainActivity::class.java).apply {
-                action = Intent.ACTION_MAIN
-                addCategory(Intent.CATEGORY_LAUNCHER)
-                putExtra("NotificationTitle", title)
-                putExtra("NotificationMessage", message)
-                if (feedingData != null){
-                    putExtra("feedingData", feedingData).apply {
-                        Log.d("Notification", "send data success $feedingData")
-                    }
-                } else if (diaperData != null) {
-                    putExtra("diaperData", diaperData).apply {
-                        Log.d("Notification", "send data success $diaperData")
-                    }
-                } else if (vaccinationData != null) {
-                    putExtra("vaccinationData", vaccinationData).apply {
-                        Log.d("Notification", "send data success $vaccinationData")
-                    }
-                }
-            }
-            val pendingIntent = PendingIntent.getActivity(
-                ctx,
-                1,
-                notificationIntent,
-                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-            )
-            val notificationManager = ctx.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-            val builder = NotificationCompat.Builder(ctx, "default")
-                .setSmallIcon(R.drawable.logo)
-                .setContentTitle(title)
-                .setContentText(message)
-                .setContentIntent(pendingIntent)
-                .setPriority(NotificationCompat.PRIORITY_HIGH)
-                .setAutoCancel(true)
-            Log.d("NotificationReceiver", "onReceive: $title")
-            notificationManager.notify(Random.nextInt(), builder.build())
+    }
+    private fun sendNotification(context: Context, content: String, data: Parcelable){
+        Log.d("NotificationReceiver", "sendNotification: $data")
+        val notificationIntent = Intent(context, MainActivity::class.java).apply {
+            action = Intent.ACTION_MAIN
+            addCategory(Intent.CATEGORY_LAUNCHER)
+            putExtra("notificationData", data)
         }
-
-
-
-
-
+        val pendingIntent = PendingIntent.getActivity(
+            context,
+            0,
+            notificationIntent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+        val notification = NotificationCompat.Builder(context, "baby_care_channel")
+            .setSmallIcon(R.drawable.logo)
+            .setContentTitle("Baby Care Assistant")
+            .setContentText(content)
+            .setContentIntent(pendingIntent)
+            .setAutoCancel(true)
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .build()
+        val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        notificationManager.notify(content.hashCode(), notification)
     }
 }

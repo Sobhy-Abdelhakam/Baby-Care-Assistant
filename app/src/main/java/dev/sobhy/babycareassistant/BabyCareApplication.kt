@@ -12,7 +12,7 @@ class BabyCareApplication: Application(){
         super.onCreate()
         val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         val channel = NotificationChannel(
-            "default",
+            "baby_care_channel",
             "feeding and diapers Reminder",
             NotificationManager.IMPORTANCE_HIGH
         ).apply {

@@ -31,12 +31,12 @@ fun HomeScreen(
     navController: NavController,
 ) {
     Box(
-        modifier = Modifier.padding(top = 32.dp)
+        modifier = Modifier.padding(vertical = 32.dp)
     ) {
         LazyColumn(
             verticalArrangement = Arrangement.SpaceEvenly,
             horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.padding(18.dp),
+            modifier = Modifier.padding(25.dp),
         ) {
             item {
                 Image(

@@ -10,6 +10,7 @@ import android.util.Log
 import androidx.core.app.NotificationCompat
 import dagger.hilt.android.AndroidEntryPoint
 import dev.sobhy.babycareassistant.MainActivity
+import dev.sobhy.babycareassistant.NotificationActivity
 import dev.sobhy.babycareassistant.R
 import dev.sobhy.babycareassistant.breastfeeding.data.model.BreastFeed
 import dev.sobhy.babycareassistant.diapers.data.model.Diapers
@@ -65,9 +66,7 @@ class NotificationReceiver: BroadcastReceiver() {
     }
     private fun sendNotification(context: Context, content: String, data: Parcelable, timeIndex: Int? = null,){
         Log.d("NotificationReceiver", "sendNotification: $data")
-        val notificationIntent = Intent(context, MainActivity::class.java).apply {
-            action = Intent.ACTION_MAIN
-            addCategory(Intent.CATEGORY_LAUNCHER)
+        val notificationIntent = Intent(context, NotificationActivity::class.java).apply {
             putExtra("notificationData", data)
             putExtra("timeIndex", timeIndex)
         }

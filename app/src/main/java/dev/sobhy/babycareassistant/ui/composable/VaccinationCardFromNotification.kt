@@ -17,6 +17,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import dev.sobhy.babycareassistant.vaccination.data.Vaccination
 
 @Composable
@@ -25,87 +27,99 @@ fun VaccinationCardFromNotification(
     modifier: Modifier = Modifier,
     done: () -> Unit,
 ) {
-    Card(
-        shape = MaterialTheme.shapes.extraSmall,
-        border = BorderStroke(1.dp, color = Color.Gray),
-        elevation = CardDefaults.cardElevation(4.dp),
-        modifier = modifier
-            .padding(8.dp)
-            .fillMaxWidth()
-            .padding(4.dp),
+    Dialog(
+        onDismissRequest = {  },
+        properties = DialogProperties(
+            usePlatformDefaultWidth = false,
+            dismissOnBackPress = false,
+            dismissOnClickOutside = false,
+        )
     ) {
-        Text(text = vaccination.name, modifier = Modifier.padding(8.dp))
-        Row(
-            modifier = Modifier
+        Card(
+            shape = MaterialTheme.shapes.extraSmall,
+            colors = CardDefaults.outlinedCardColors(
+                containerColor = Color.White
+            ),
+            border = BorderStroke(1.dp, color = Color.Gray),
+            modifier = modifier
+                .padding(8.dp)
                 .fillMaxWidth()
-                .padding(2.dp)
-                .padding(horizontal = 8.dp)
-                .background(
-                    color = MaterialTheme.colorScheme.secondaryContainer,
-                    shape = MaterialTheme.shapes.extraSmall
-                )
-                .padding(4.dp),
-            horizontalArrangement = Arrangement.SpaceBetween
+                .padding(8.dp),
         ) {
-            Text(text = "Date", color = Color.Gray)
-            Text(text = "${vaccination.date}, ${vaccination.day}")
-        }
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(2.dp)
-                .padding(horizontal = 8.dp)
-                .background(
-                    color = MaterialTheme.colorScheme.secondaryContainer,
-                    shape = MaterialTheme.shapes.extraSmall
-                )
-                .padding(4.dp),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Text(text = "Code", color = Color.Gray)
-            Text(text = vaccination.code)
-        }
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(2.dp)
-                .padding(horizontal = 8.dp)
-                .background(
-                    color = MaterialTheme.colorScheme.secondaryContainer,
-                    shape = MaterialTheme.shapes.extraSmall
-                )
-                .padding(4.dp),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Text(text = "Age Group", color = Color.Gray)
-            Text(text = vaccination.ageGroup)
-        }
-        Column(
-            modifier = Modifier.padding(8.dp)
-        ) {
-            Text(
-                text = "Reason for vaccination:",
-                color = Color.Gray,
-                modifier = Modifier.padding(2.dp)
-            )
-            Text(text = vaccination.reason, modifier = Modifier.padding(2.dp))
-        }
-        if (vaccination.notes.isNotEmpty()) {
+            Text(text = vaccination.name, modifier = Modifier.padding(8.dp))
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(2.dp)
+                    .padding(horizontal = 8.dp)
+                    .background(
+                        color = MaterialTheme.colorScheme.secondaryContainer,
+                        shape = MaterialTheme.shapes.extraSmall
+                    )
+                    .padding(4.dp),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(text = "Date", color = Color.Gray)
+                Text(text = "${vaccination.date}, ${vaccination.day}")
+            }
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(2.dp)
+                    .padding(horizontal = 8.dp)
+                    .background(
+                        color = MaterialTheme.colorScheme.secondaryContainer,
+                        shape = MaterialTheme.shapes.extraSmall
+                    )
+                    .padding(4.dp),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(text = "Code", color = Color.Gray)
+                Text(text = vaccination.code)
+            }
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(2.dp)
+                    .padding(horizontal = 8.dp)
+                    .background(
+                        color = MaterialTheme.colorScheme.secondaryContainer,
+                        shape = MaterialTheme.shapes.extraSmall
+                    )
+                    .padding(4.dp),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(text = "Age Group", color = Color.Gray)
+                Text(text = vaccination.ageGroup)
+            }
             Column(
                 modifier = Modifier.padding(8.dp)
             ) {
-                Text(text = "Other notes:", color = Color.Gray, modifier = Modifier.padding(2.dp))
-                Text(text = vaccination.notes, modifier = Modifier.padding(2.dp))
+                Text(
+                    text = "Reason for vaccination:",
+                    color = Color.Gray,
+                    modifier = Modifier.padding(2.dp)
+                )
+                Text(text = vaccination.reason, modifier = Modifier.padding(2.dp))
+            }
+            if (vaccination.notes.isNotEmpty()) {
+                Column(
+                    modifier = Modifier.padding(8.dp)
+                ) {
+                    Text(text = "Other notes:", color = Color.Gray, modifier = Modifier.padding(2.dp))
+                    Text(text = vaccination.notes, modifier = Modifier.padding(2.dp))
+                }
+            }
+            Button(
+                onClick = done,
+                modifier = Modifier
+                    .padding(8.dp)
+                    .align(Alignment.CenterHorizontally),
+                shape = MaterialTheme.shapes.small
+            ) {
+                Text(text = "Done")
             }
         }
-        Button(
-            onClick = done,
-            modifier = Modifier
-                .padding(8.dp)
-                .align(Alignment.CenterHorizontally),
-            shape = MaterialTheme.shapes.small
-        ) {
-            Text(text = "Done")
-        }
     }
+
 }

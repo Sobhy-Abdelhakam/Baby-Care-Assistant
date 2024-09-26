@@ -13,14 +13,21 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.ZoneId
+
 object AlarmManagerHelper {
     fun scheduleVaccinationAlarm(context: Context, vaccination: Vaccination) {
         val intent = Intent(context, NotificationReceiver::class.java).apply {
             putExtra("type", "vaccination")
             putExtra("data", vaccination)
         }
-        val dateTemp = LocalDate.parse(vaccination.date).atStartOfDay()
-        val alarmTime = dateTemp.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
+        val vaccinationDate = LocalDate.parse(vaccination.date)
+        val timeTemp = if (vaccinationDate == LocalDate.now()) {
+            vaccinationDate.atTime(LocalTime.now().plusSeconds(10))
+        } else {
+            vaccinationDate.atTime(LocalTime.of(10, 0))
+        }
+
+        val alarmTime = timeTemp.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
         scheduleAlarm(context, intent, alarmTime, vaccination.id.hashCode())
     }
 
@@ -47,17 +54,20 @@ object AlarmManagerHelper {
         val dateTemp = LocalDate.parse(diaperChange.date)
         val timeTemp = LocalTime.parse(diaperChange.timesOfDiapersChange[timeIndex])
         val dateTimeTemp = LocalDateTime.of(dateTemp, timeTemp)
-        val alarmTime =dateTimeTemp.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
+        val alarmTime = dateTimeTemp.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
         scheduleAlarm(context, intent, alarmTime, diaperChange.id.hashCode() + timeIndex)
     }
 
     private fun scheduleAlarm(context: Context, intent: Intent, time: Long, requestCode: Int) {
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
         val pendingIntent = PendingIntent.getBroadcast(
-            context, requestCode, intent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+            context,
+            requestCode,
+            intent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
         Log.d("AlarmManagerHelper", "scheduleAlarm: $time")
-        if (System.currentTimeMillis() > time){
+        if (System.currentTimeMillis() > time) {
             return
         }
         alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, time, pendingIntent)

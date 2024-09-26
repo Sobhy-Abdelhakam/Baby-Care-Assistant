@@ -136,13 +136,12 @@ fun AddFeedScreen(
             CustomTextField(
                 value = state.numOfFeedingPerDay,
                 onValueChange = { text ->
-                    viewModel.onEvent(
-                        AddFeedingUiEvent.NumberOfFeedingsChanged(
-                            text.filter { symbol ->
-                                symbol.isDigit()
-                            }
+                    // Only allow digits and ensure number is less than 9
+                    if (text.all { it.isDigit() } && (text.toIntOrNull() ?: 0) <= 9) {
+                        viewModel.onEvent(
+                            AddFeedingUiEvent.NumberOfFeedingsChanged(text)
                         )
-                    )
+                    }
                 },
                 label = "Number of feedings/day",
                 placeHolder = "Ex: 3",

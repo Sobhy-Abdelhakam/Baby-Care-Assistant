@@ -32,7 +32,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import dev.sobhy.babycareassistant.breastfeeding.add.AddFeedingUiEvent
 import dev.sobhy.babycareassistant.ui.composable.AddScreens
 import dev.sobhy.babycareassistant.ui.composable.CustomDatePicker
 import dev.sobhy.babycareassistant.ui.composable.CustomTextField
@@ -48,7 +47,7 @@ import java.time.format.DateTimeFormatter
 fun AddDiaperScreen(
     navController: NavController,
     diaperId: String? = null,
-    viewModel: AddDiaperViewModel = hiltViewModel()
+    viewModel: AddDiaperViewModel = hiltViewModel(),
 ) {
     val state by viewModel.addDiaperState.collectAsState()
     var showDatePicker by remember { mutableStateOf(false) }
@@ -56,7 +55,7 @@ fun AddDiaperScreen(
     var indexOfTimeTextField by remember { mutableIntStateOf(0) }
 
     LaunchedEffect(Unit) {
-        if (diaperId != null){
+        if (diaperId != null) {
             viewModel.getDiaperById(diaperId)
         }
     }
@@ -68,7 +67,7 @@ fun AddDiaperScreen(
             navController.popBackStack()
         }
     }
-    
+
     AddScreens(title = "Diapers Data", back = { navController.popBackStack() }) {
         item {
             Row(
@@ -132,13 +131,11 @@ fun AddDiaperScreen(
             CustomTextField(
                 value = state.numOfDiaperChange,
                 onValueChange = { text ->
-                    viewModel.onEvent(
-                        AddDiaperUiEvent.NumberOfDiaperChanged(
-                            text.filter { symbol ->
-                                symbol.isDigit()
-                            }
+                    if (text.all { it.isDigit() } && (text.toIntOrNull() ?: 0) <= 9) {
+                        viewModel.onEvent(
+                            AddDiaperUiEvent.NumberOfDiaperChanged(text)
                         )
-                    )
+                    }
                 },
                 label = "Number of diaper changes",
                 placeHolder = "Ex: 4",
@@ -157,9 +154,9 @@ fun AddDiaperScreen(
                             textAlign = TextAlign.Center
                         )
                         OutlinedTextField(
-                            value = if(value == LocalTime.of(0,0,30)){
+                            value = if (value == LocalTime.of(0, 0, 30)) {
                                 ""
-                            }else{
+                            } else {
                                 value.format(DateTimeFormatter.ofPattern("hh:mm a"))
                             },
                             onValueChange = { },

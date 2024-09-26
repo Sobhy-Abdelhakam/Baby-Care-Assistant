@@ -132,7 +132,7 @@ fun FeedingCardFromNotification(
                     containerColor = Color.Gray
                 )
             ) {
-                Text(text = "Later")
+                Text(text = "Close")
             }
             Button(
                 onClick = done,

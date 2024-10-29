@@ -48,20 +48,7 @@ fun AddGrowthScreen(
 ) {
     val state by viewModel.addGrowthState.collectAsStateWithLifecycle()
     var showDatePicker by remember { mutableStateOf(false) }
-    val items = listOf(
-        "1 month",
-        "2 months",
-        "3 months",
-        "4 months",
-        "5 months",
-        "6 months",
-        "7 months",
-        "8 months",
-        "9 months",
-        "10 months",
-        "11 months",
-        "12 months"
-    )
+
     var expanded by remember { mutableStateOf(false) }
     LaunchedEffect(Unit) {
         if (growthId != null) {

@@ -1,5 +1,6 @@
 package dev.sobhy.babycareassistant.sleep.add
 
+import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -18,7 +19,10 @@ import androidx.compose.material.icons.filled.DeleteForever
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
@@ -52,6 +56,8 @@ import java.time.Duration
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
+import kotlin.time.DurationUnit
+import kotlin.time.toDuration
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -61,6 +67,19 @@ fun AddSleepScreen(
     viewModel: AddSleepViewModel = hiltViewModel(),
 ) {
     val state by viewModel.addSleepState.collectAsState()
+    val babyAge = listOf(
+        "0 - 3 months",
+        "4 - 11 months",
+        "1 - 2 years",
+        "3 - 5 years",
+    )
+    var ageDropDownExpanded by remember { mutableStateOf(false) }
+    val sleepQuality = listOf(
+        "Good",
+        "average",
+        "bad",
+    )
+    var sleepQualityExpanded by remember { mutableStateOf(false) }
     var showDatePicker by remember { mutableStateOf(false) }
     var showTimePicker by remember { mutableStateOf(false) }
     var indexOfTimeTextField by remember { mutableIntStateOf(0) }
@@ -114,6 +133,100 @@ fun AddSleepScreen(
                     }
                 }
             )
+        }
+        item {
+            ExposedDropdownMenuBox(
+                expanded = ageDropDownExpanded,
+                onExpandedChange = {
+                    ageDropDownExpanded = !ageDropDownExpanded
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 4.dp)
+            ) {
+                OutlinedTextField(
+                    readOnly = true,
+                    value = state.babyAge,
+                    onValueChange = { },
+                    label = { Text("Baby Age") },
+                    trailingIcon = {
+                        ExposedDropdownMenuDefaults.TrailingIcon(
+                            expanded = ageDropDownExpanded
+                        )
+                    },
+                    modifier = Modifier
+                        .menuAnchor()
+                        .fillMaxWidth(),
+                )
+                ExposedDropdownMenu(
+                    expanded = ageDropDownExpanded,
+                    onDismissRequest = {
+                        ageDropDownExpanded = false
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                ) {
+                    babyAge.forEach { selectionOption ->
+                        DropdownMenuItem(
+                            text = {
+                                Text(text = selectionOption)
+                            },
+                            onClick = {
+                                viewModel.onEvent(AddSleepUiEvent.BabyAgeChange(selectionOption))
+                                ageDropDownExpanded = false
+                            },
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                    }
+                }
+            }
+        }
+        item {
+            ExposedDropdownMenuBox(
+                expanded = sleepQualityExpanded,
+                onExpandedChange = {
+                    sleepQualityExpanded = !sleepQualityExpanded
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 4.dp)
+            ) {
+                OutlinedTextField(
+                    readOnly = true,
+                    value = state.sleepQuality,
+                    onValueChange = { },
+                    label = { Text("Sleep Quality") },
+                    trailingIcon = {
+                        ExposedDropdownMenuDefaults.TrailingIcon(
+                            expanded = sleepQualityExpanded
+                        )
+                    },
+                    modifier = Modifier
+                        .menuAnchor()
+                        .fillMaxWidth(),
+                )
+                ExposedDropdownMenu(
+                    expanded = sleepQualityExpanded,
+                    onDismissRequest = {
+                        sleepQualityExpanded = false
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                ) {
+                    sleepQuality.forEach { selectionOption ->
+                        DropdownMenuItem(
+                            text = {
+                                Text(text = selectionOption)
+                            },
+                            onClick = {
+                                viewModel.onEvent(AddSleepUiEvent.SleepQualityChange(selectionOption))
+                                sleepQualityExpanded = false
+                            },
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                    }
+                }
+            }
         }
         item {
             Text(
@@ -195,7 +308,7 @@ fun AddSleepScreen(
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 CustomTextField(
-                    value = state.duration,
+                    value = "${state.duration.toDuration(DurationUnit.MINUTES)}",
                     onValueChange = {},
                     label = "Sleep duration",
                     placeHolder = "00:00",
@@ -299,6 +412,11 @@ fun AddSleepScreen(
             }
         }
         item {
+            if (state.totalSleepTime != 0.0){
+                Text(text = "Total sleep for day: ${state.totalSleepTime} Hours")
+            }
+        }
+        item {
             state.sleepTimesError?.let {
                 Text(
                     text = it,
@@ -358,9 +476,10 @@ fun AddSleepScreen(
                 } else {
                     duration
                 }
+                Log.d("duration", temp.toString())
                 viewModel.onEvent(
                     AddSleepUiEvent.DurationChange(
-                        "${temp.toHours()}:${temp.toMinutes() % 60}"
+                        temp.toMinutes()
                     )
                 )
             } else if (indexOfTimeTextField == 2) {
@@ -376,9 +495,10 @@ fun AddSleepScreen(
                 } else {
                     duration
                 }
+                Log.d("duration", temp.toString())
                 viewModel.onEvent(
                     AddSleepUiEvent.DurationChange(
-                        "${temp.toHours()}:${temp.toMinutes() % 60}"
+                        temp.toMinutes()
                     )
                 )
             }

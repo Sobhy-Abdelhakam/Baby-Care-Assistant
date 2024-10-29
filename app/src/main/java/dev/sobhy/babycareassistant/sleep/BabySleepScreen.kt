@@ -48,7 +48,8 @@ fun BabySleepScreen(
     navController: NavController,
     viewModel: SleepViewModel = hiltViewModel(),
 ) {
-    val state by viewModel.growthState.collectAsStateWithLifecycle()
+    val state by viewModel.sleepState.collectAsStateWithLifecycle()
+    val sleepResult by viewModel.selectedSleepResult.collectAsStateWithLifecycle()
     var showResultDialog by remember { mutableStateOf(false) }
     FeaturesScreenContent(
         isLoading = state.loading,
@@ -59,6 +60,7 @@ fun BabySleepScreen(
         itemContent = {
             SleepItem(
                 sleepDate = it.date,
+                sleepQuality = it.sleepQuality,
                 sleepTimes = it.sleepTimes,
                 editButtonClick = {
                     navController.navigate(ScreenRoutes.AddBabySleep.route + "/${it.id}")
@@ -67,6 +69,7 @@ fun BabySleepScreen(
                     viewModel.deleteSleep(it.id)
                 },
                 resultButtonClick = {
+                    viewModel.calculateSleepResult(it)
                     showResultDialog = true
                 }
             )
@@ -93,18 +96,32 @@ fun BabySleepScreen(
                 Column(
                     modifier = Modifier.padding(16.dp)
                 ) {
-                    Text(text = "Sleep Result")
                     Text(
-                        text = "Lorem Ipsum is simply dummy text of the printing and typesetting industry",
+                        text = sleepResult.result,
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Bold,
                         modifier = Modifier
-                            .padding(vertical = 8.dp)
-                            .fillMaxWidth()
-                            .background(
-                                color = MaterialTheme.colorScheme.surface,
-                                shape = MaterialTheme.shapes.small
-                            )
-                            .padding(8.dp)
+                            .padding(bottom = 8.dp)
+                            .align(Alignment.CenterHorizontally)
                     )
+                    if (sleepResult.advice.isNotEmpty()) {
+                        Text(text = "Sleep Result")
+                        Column(
+                            modifier = Modifier
+                                .padding(vertical = 8.dp)
+                                .fillMaxWidth()
+                                .background(
+                                    color = MaterialTheme.colorScheme.surface,
+                                    shape = MaterialTheme.shapes.small
+                                )
+                                .padding(8.dp)
+                        ) {
+                            sleepResult.advice.forEach {
+                                Text(text = "• $it")
+                            }
+                        }
+                    }
+
                     Button(
                         onClick = { showResultDialog = false },
                         contentPadding = PaddingValues(10.dp),
@@ -128,6 +145,7 @@ fun BabySleepScreen(
 @Composable
 fun SleepItem(
     sleepDate: String,
+    sleepQuality: String,
     sleepTimes: List<SleepTime>,
     editButtonClick: () -> Unit,
     deleteButtonClick: () -> Unit,
@@ -144,6 +162,10 @@ fun SleepItem(
     ) {
         Text(
             text = "Data: $sleepDate",
+            modifier = Modifier.padding(8.dp)
+        )
+        Text(
+            text = "Sleep Quality: $sleepQuality",
             modifier = Modifier.padding(8.dp)
         )
         sleepTimes.forEachIndexed { index, sleepTime ->

@@ -3,7 +3,6 @@ package dev.sobhy.babycareassistant.sleep.add
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dev.sobhy.babycareassistant.growth.data.model.BabyGrowth
 import dev.sobhy.babycareassistant.sleep.data.model.SleepData
 import dev.sobhy.babycareassistant.sleep.data.model.SleepTime
 import dev.sobhy.babycareassistant.sleep.domain.usecases.GetSleepByIdUseCase
@@ -30,6 +29,14 @@ class AddSleepViewModel @Inject constructor(
                 _addSleepState.update { it.copy(date = event.date, dateError = null) }
             }
 
+            is AddSleepUiEvent.BabyAgeChange -> {
+                _addSleepState.update { it.copy(babyAge = event.age) }
+            }
+
+            is AddSleepUiEvent.SleepQualityChange -> {
+                _addSleepState.update { it.copy(sleepQuality = event.quality) }
+            }
+
             is AddSleepUiEvent.SleepTimeChange -> {
                 _addSleepState.update { it.copy(sleepTime = event.time) }
             }
@@ -45,12 +52,19 @@ class AddSleepViewModel @Inject constructor(
             AddSleepUiEvent.AddSleepTime -> addSleepTimeItem()
             is AddSleepUiEvent.SaveSleepData -> saveSleepData(event.sleepId)
             is AddSleepUiEvent.OnDeleteSleepTimeClicked -> {
-                val updatedSleepTimes = _addSleepState.value.sleepTimesList.toMutableList().apply {
+                _addSleepState.value.sleepTimesList.toMutableList().apply {
+                    _addSleepState.update {
+                        it.copy(
+                            totalSleepTime = it.totalSleepTime.minus(this[event.index].duration)
+                        )
+                    }
                     removeAt(event.index)
+                    _addSleepState.update {
+                        it.copy(
+                            sleepTimesList = this,
+                        )
+                    }
                 }
-                _addSleepState.value = _addSleepState.value.copy(
-                    sleepTimesList = updatedSleepTimes,
-                )
             }
         }
     }
@@ -62,13 +76,14 @@ class AddSleepViewModel @Inject constructor(
                     SleepTime(
                         addSleepState.value.sleepTime.toString(),
                         addSleepState.value.wakeUpTime.toString(),
-                        addSleepState.value.duration
+                        formatDurationAsDecimal(addSleepState.value.duration)
                     )
                 ),
                 sleepTime = LocalTime.of(0, 0,30),
                 wakeUpTime = LocalTime.of(0, 0,30),
-                duration = "",
-                sleepTimesError = null
+                duration = 0L,
+                sleepTimesError = null,
+                totalSleepTime = it.totalSleepTime.plus(formatDurationAsDecimal(it.duration)),
             )
         }
     }
@@ -92,7 +107,10 @@ class AddSleepViewModel @Inject constructor(
             val babySleep = SleepData(
                 id = id ?: "",
                 date = sleepState.date.toString(),
-                sleepTimes = sleepState.sleepTimesList
+                babyAge = sleepState.babyAge,
+                sleepQuality = sleepState.sleepQuality,
+                sleepTimes = sleepState.sleepTimesList,
+                totalSleepTime = sleepState.totalSleepTime,
             )
             saveOrUpdateSleepUseCase(babySleep)
                 .addOnSuccessListener {
@@ -121,4 +139,12 @@ class AddSleepViewModel @Inject constructor(
             }
         }
     }
+}
+
+
+private fun formatDurationAsDecimal(durationInMinutes: Long): Double {
+    val hours = durationInMinutes / 60
+    val minutes = durationInMinutes % 60
+    val fractionalHours = minutes / 60.0
+    return (hours + fractionalHours)
 }

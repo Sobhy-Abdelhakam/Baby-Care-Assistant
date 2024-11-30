@@ -2,10 +2,10 @@ package dev.sobhy.babycareassistant.authentication.domain.repository
 
 import android.net.Uri
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import dev.sobhy.babycareassistant.authentication.domain.UserProfile
+import dev.sobhy.babycareassistant.alarm.data.FeedingSchedule
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
@@ -85,6 +85,25 @@ class AuthRepository(
         emit(Result.success(userProfile!!))
     }.catch { e ->
         emit(Result.failure(e))
+    }
+
+    fun fetchFeedingSchedule(babyAgeInMonths: Int, onComplete: (FeedingSchedule) -> Unit) {
+        val documentId = when (babyAgeInMonths) {
+            1 -> "month_1"
+            2 -> "month_2"
+            in 3..4 -> "month_3_4"
+            in 5..6 -> "month_5_6"
+            in 7..9 -> "month_7_9"
+            in 10..12 -> "month_10_12"
+            else -> null
+        }
+
+        documentId?.let {docId ->
+            db.collection("feeding_schedule").document(docId).get()
+                .addOnSuccessListener { document ->
+                    document.toObject(FeedingSchedule::class.java)?.let { onComplete(it) }
+                }
+        }
     }
 
 }

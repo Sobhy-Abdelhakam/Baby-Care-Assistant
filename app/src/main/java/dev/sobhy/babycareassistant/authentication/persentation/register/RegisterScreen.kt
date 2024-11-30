@@ -1,6 +1,7 @@
 package dev.sobhy.babycareassistant.authentication.persentation.register
 
 import android.net.Uri
+import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
@@ -50,6 +51,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -59,6 +61,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import dev.sobhy.babycareassistant.R
+import dev.sobhy.babycareassistant.alarm.data.repository.AlarmManagerHelper
 import dev.sobhy.babycareassistant.navigation.AuthenticationRoutes
 import dev.sobhy.babycareassistant.navigation.ScreenRoutes
 import dev.sobhy.babycareassistant.ui.composable.CustomDatePicker
@@ -116,8 +119,18 @@ fun RegisterScreen(
         remember<(String) -> Unit> {
             { viewModel.onEvent(RegisterUiEvent.ConfirmPasswordChange(it)) }
         }
+    val context = LocalContext.current
     LaunchedEffect(state.success) {
         if (state.success) {
+            val babyAgeInMonths = state.age
+            viewModel.fetchFeedingSchedule(babyAgeInMonths) {feedingSchedule ->
+                Log.d("MainActivity", "Feeding Schedule: $feedingSchedule")
+                AlarmManagerHelper.scheduleFeedingNotification(
+                    context,
+                    feedingSchedule,
+                    0 // Interval in hours
+                )
+            }
             navController.navigate(ScreenRoutes.Home.route) {
                 popUpTo(AuthenticationRoutes.LOGIN.route) {
                     inclusive = true
@@ -419,11 +432,6 @@ fun RegisterScreen(
             },
             dateChange = { date ->
                 dateChange(date)
-                viewModel.onEvent(
-                    RegisterUiEvent.AgeChange(
-                        (Year.now().value - date.year) + 1
-                    )
-                )
             },
         )
     }

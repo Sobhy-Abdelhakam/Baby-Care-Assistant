@@ -11,11 +11,6 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import dev.sobhy.babycareassistant.authentication.domain.repository.AuthRepository
-import dev.sobhy.babycareassistant.breastfeeding.data.repository.FeedingRepository
-import dev.sobhy.babycareassistant.breastfeeding.domain.usecases.DeleteFeedingUseCase
-import dev.sobhy.babycareassistant.breastfeeding.domain.usecases.GetFeedingByIdUseCase
-import dev.sobhy.babycareassistant.breastfeeding.domain.usecases.GetFeedingUseCase
-import dev.sobhy.babycareassistant.breastfeeding.domain.usecases.SaveOrUpdateFeedingUseCase
 import dev.sobhy.babycareassistant.diapers.data.repository.DiapersRepository
 import dev.sobhy.babycareassistant.diapers.domain.usecase.DeleteDiaperUseCase
 import dev.sobhy.babycareassistant.diapers.domain.usecase.GetDiaperByIdUseCase
@@ -211,40 +206,6 @@ object AppModule {
     @Singleton
     fun provideGetHealthInfoByIdUseCase(healthInfoRepository: HealthInfoRepository): GetHealthInfoById {
         return GetHealthInfoById(healthInfoRepository)
-    }
-
-    @Provides
-    @Singleton
-    fun provideFeedingRepository(
-        auth: FirebaseAuth,
-        firestore: FirebaseFirestore,
-        @ApplicationContext context: Context,
-    ): FeedingRepository{
-        return FeedingRepository(
-            firebaseAuth = auth,
-            firestore = firestore,
-            context = context
-        )
-    }
-    @Provides
-    @Singleton
-    fun provideGetFeedingUseCase(feedingRepository: FeedingRepository): GetFeedingUseCase {
-        return GetFeedingUseCase(feedingRepository)
-    }
-    @Provides
-    @Singleton
-    fun provideSaveOrUpdateFeedingUseCase(feedingRepository: FeedingRepository): SaveOrUpdateFeedingUseCase {
-        return SaveOrUpdateFeedingUseCase(feedingRepository)
-    }
-    @Provides
-    @Singleton
-    fun provideDeleteFeedingUseCase(feedingRepository: FeedingRepository): DeleteFeedingUseCase {
-        return DeleteFeedingUseCase(feedingRepository)
-    }
-    @Provides
-    @Singleton
-    fun provideGetFeedingByIdUseCase(feedingRepository: FeedingRepository): GetFeedingByIdUseCase {
-        return GetFeedingByIdUseCase(feedingRepository)
     }
 
     @Provides

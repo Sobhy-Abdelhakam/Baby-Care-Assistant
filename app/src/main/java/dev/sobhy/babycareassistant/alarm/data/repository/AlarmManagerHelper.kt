@@ -5,9 +5,10 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.util.Log
+import dev.sobhy.babycareassistant.alarm.notification.FeedingNotificationReceiver
 import dev.sobhy.babycareassistant.alarm.notification.NotificationReceiver
-import dev.sobhy.babycareassistant.breastfeeding.data.model.BreastFeed
 import dev.sobhy.babycareassistant.diapers.data.model.Diapers
+import dev.sobhy.babycareassistant.alarm.data.FeedingSchedule
 import dev.sobhy.babycareassistant.vaccination.data.Vaccination
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -29,20 +30,6 @@ object AlarmManagerHelper {
 
         val alarmTime = timeTemp.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
         scheduleAlarm(context, intent, alarmTime, vaccination.id.hashCode())
-    }
-
-    fun scheduleBreastFeedingAlarm(context: Context, feeding: BreastFeed, timeIndex: Int) {
-        Log.d("AlarmManagerHelper", "scheduleBreastFeedingAlarm: $feeding")
-        val intent = Intent(context, NotificationReceiver::class.java).apply {
-            putExtra("type", "feeding")
-            putExtra("data", feeding)
-            putExtra("timeIndex", timeIndex)
-        }
-        val dateTemp = LocalDate.parse(feeding.date)
-        val timeTemp = LocalTime.parse(feeding.timeOfTimes[timeIndex].time)
-        val dateTimeTemp = LocalDateTime.of(dateTemp, timeTemp)
-        val alarmTime = dateTimeTemp.atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
-        scheduleAlarm(context, intent, alarmTime, feeding.id.hashCode() + timeIndex)
     }
 
     fun scheduleDiaperChangeAlarm(context: Context, diaperChange: Diapers, timeIndex: Int) {
@@ -71,5 +58,30 @@ object AlarmManagerHelper {
             return
         }
         alarmManager.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, time, pendingIntent)
+    }
+
+    fun scheduleFeedingNotification(
+        context: Context,
+        feedingSchedule: FeedingSchedule,
+        feedingIntervalHours: Int,
+    ) {
+        val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        val intent = Intent(context, FeedingNotificationReceiver::class.java).apply {
+            putExtra("feedingSchedule", feedingSchedule)
+            putExtra("feedingIntervalHours", feedingIntervalHours)
+        }
+        val pendingIntent = PendingIntent.getBroadcast(
+            context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+
+        val time =
+            if (feedingIntervalHours == 0) LocalTime.now().plusSeconds(10) else LocalTime.now()
+                .plusHours(feedingIntervalHours.toLong())
+        Log.d("AlarmManagerHelper", "scheduleNextFeedingNotification: $time")
+        alarmManager.setExactAndAllowWhileIdle(
+            AlarmManager.RTC_WAKEUP,
+            time.toSecondOfDay().toLong() * 1000,
+            pendingIntent
+        )
     }
 }

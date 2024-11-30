@@ -7,16 +7,13 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
-import com.google.gson.Gson
 import dev.sobhy.babycareassistant.breastfeeding.BreastFeedingScreen
-import dev.sobhy.babycareassistant.breastfeeding.add.AddFeedScreen
 import dev.sobhy.babycareassistant.diapers.DiapersScreen
 import dev.sobhy.babycareassistant.diapers.add.AddDiaperScreen
 import dev.sobhy.babycareassistant.growth.BabyGrowthScreen
 import dev.sobhy.babycareassistant.growth.add.AddGrowthScreen
 import dev.sobhy.babycareassistant.healthinfo.HealthInfoScreen
 import dev.sobhy.babycareassistant.healthinfo.addhealthinfo.AddHealthInfoScreen
-import dev.sobhy.babycareassistant.healthinfo.data.model.HealthInfo
 import dev.sobhy.babycareassistant.home.HomeScreen
 import dev.sobhy.babycareassistant.notification.NotificationScreen
 import dev.sobhy.babycareassistant.profile.ProfileScreen
@@ -29,7 +26,6 @@ import dev.sobhy.babycareassistant.vaccination.addvaccination.AddVaccinationScre
 fun NavigationGraph(
     navController: NavHostController,
     startDestination: String,
-    modifier: Modifier = Modifier
 ) {
     NavHost(navController = navController, startDestination = startDestination){
         authGraph(navController)
@@ -46,19 +42,19 @@ fun NavigationGraph(
         composable(ScreenRoutes.Breastfeed.route){
             BreastFeedingScreen(navController)
         }
-        composable(
-            route = ScreenRoutes.AddBreastfeed.route + "/{feedingId}",
-            arguments = listOf(
-                navArgument("feedingId"){
-                    type = NavType.StringType
-                    nullable = true
-                    defaultValue = null
-                }
-            )
-        ){
-            val feedingId = it.arguments?.getString("feedingId")
-            AddFeedScreen(navController, feedingId = feedingId)
-        }
+//        composable(
+//            route = ScreenRoutes.AddBreastfeed.route + "/{feedingId}",
+//            arguments = listOf(
+//                navArgument("feedingId"){
+//                    type = NavType.StringType
+//                    nullable = true
+//                    defaultValue = null
+//                }
+//            )
+//        ){
+//            val feedingId = it.arguments?.getString("feedingId")
+//            AddFeedScreen(navController, feedingId = feedingId)
+//        }
         composable(ScreenRoutes.BabyGrowth.route){
             BabyGrowthScreen(navController)
         }

@@ -37,9 +37,9 @@ fun <T> FeaturesScreenContent(
     buttonText: String,
     itemContent: @Composable (T) -> Unit,
     emptyMessage: String,
+    showAddButton: Boolean = true,
     addButtonClick: () -> Unit,
     backButtonClick: () -> Unit,
-    modifier: Modifier = Modifier,
 ) {
     Scaffold(
         topBar = {
@@ -63,23 +63,24 @@ fun <T> FeaturesScreenContent(
             )
         },
         bottomBar = {
-            BottomAppBar(
-                containerColor = Color.Transparent,
-            ) {
-                Button(
-                    onClick = addButtonClick,
-                    modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
-                    shape = MaterialTheme.shapes.extraSmall
+            if (showAddButton) {
+                BottomAppBar(
+                    containerColor = Color.Transparent,
                 ) {
-                    Text(
-                        text = buttonText,
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold,
-                        modifier = Modifier.padding(4.dp)
-                    )
+                    Button(
+                        onClick = addButtonClick,
+                        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+                        shape = MaterialTheme.shapes.extraSmall
+                    ) {
+                        Text(
+                            text = buttonText,
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier.padding(4.dp)
+                        )
+                    }
                 }
             }
-
         }
     ) { paddingValue ->
         when {
@@ -88,7 +89,7 @@ fun <T> FeaturesScreenContent(
             }
 
             errorMessage != null -> {
-                ErrorScreen(errorMessage = errorMessage ?: "Unknown error")
+                ErrorScreen(errorMessage = errorMessage)
             }
 
             data.isNotEmpty() -> {

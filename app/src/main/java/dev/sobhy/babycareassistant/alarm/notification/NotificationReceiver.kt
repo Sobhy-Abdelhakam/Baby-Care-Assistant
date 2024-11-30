@@ -9,10 +9,8 @@ import android.os.Parcelable
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import dagger.hilt.android.AndroidEntryPoint
-import dev.sobhy.babycareassistant.MainActivity
 import dev.sobhy.babycareassistant.NotificationActivity
 import dev.sobhy.babycareassistant.R
-import dev.sobhy.babycareassistant.breastfeeding.data.model.BreastFeed
 import dev.sobhy.babycareassistant.diapers.data.model.Diapers
 import dev.sobhy.babycareassistant.notification.data.repository.NotificationRepository
 import dev.sobhy.babycareassistant.notification.domain.NotificationEntity
@@ -23,38 +21,44 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class NotificationReceiver: BroadcastReceiver() {
-    @Inject lateinit var notificationRepository: NotificationRepository
+class NotificationReceiver : BroadcastReceiver() {
+    @Inject
+    lateinit var notificationRepository: NotificationRepository
     override fun onReceive(context: Context, intent: Intent) {
         val type = intent.getStringExtra("type")
         Log.d("NotificationReceiver", "onReceive: $type")
-        when(type){
+        when (type) {
             "vaccination" -> {
                 val vaccination = intent.getParcelableExtra<Vaccination>("data")
                 vaccination?.let {
-                    storeNotificationInDatabase("It's time to vaccination", "${vaccination.name} ${vaccination.code}")
+                    storeNotificationInDatabase(
+                        "It's time to vaccination",
+                        "${vaccination.name} ${vaccination.code}"
+                    )
                     sendNotification(context, "It's time for vaccination: ${vaccination.name}", it)
                 }
             }
+
             "diaper" -> {
                 val diaper = intent.getParcelableExtra<Diapers>("data")
                 val timeIndex = intent.getIntExtra("timeIndex", 0)
                 diaper?.let {
-                    storeNotificationInDatabase("It's time to change diaper", "time: ${timeIndex+1}: ${it.timesOfDiapersChange[timeIndex]}")
-                    sendNotification(context, "It's time for diaper change number: ${timeIndex+1}", it, timeIndex)
-                }
-                }
-            "feeding" -> {
-                val feeding = intent.getParcelableExtra<BreastFeed>("data")
-                val timeIndex = intent.getIntExtra("timeIndex", 0)
-                feeding?.let {
-                    storeNotificationInDatabase("It's feeding time", "Amount of milk ${it.timeOfTimes[timeIndex].amountOfMilk}")
-                    sendNotification(context, "It's time for feeding number: ${timeIndex+1}", it, timeIndex)
+                    storeNotificationInDatabase(
+                        "It's time to change diaper",
+                        "time: ${timeIndex + 1}: ${it.timesOfDiapersChange[timeIndex]}"
+                    )
+                    sendNotification(
+                        context,
+                        "It's time for diaper change number: ${timeIndex + 1}",
+                        it,
+                        timeIndex
+                    )
                 }
             }
         }
     }
-    private fun storeNotificationInDatabase(title: String, message: String){
+
+    private fun storeNotificationInDatabase(title: String, message: String) {
         val notificationEntity = NotificationEntity(
             title = title,
             message = message,
@@ -64,7 +68,13 @@ class NotificationReceiver: BroadcastReceiver() {
             notificationRepository.saveNotification(notificationEntity)
         }
     }
-    private fun sendNotification(context: Context, content: String, data: Parcelable, timeIndex: Int? = null,){
+
+    private fun sendNotification(
+        context: Context,
+        content: String,
+        data: Parcelable,
+        timeIndex: Int? = null,
+    ) {
         Log.d("NotificationReceiver", "sendNotification: $data")
         val notificationIntent = Intent(context, NotificationActivity::class.java).apply {
             putExtra("notificationData", data)
@@ -84,7 +94,8 @@ class NotificationReceiver: BroadcastReceiver() {
             .setAutoCancel(true)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .build()
-        val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        val notificationManager =
+            context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         notificationManager.notify(content.hashCode(), notification)
     }
 }

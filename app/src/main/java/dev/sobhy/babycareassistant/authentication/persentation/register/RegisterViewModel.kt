@@ -7,6 +7,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import dev.sobhy.babycareassistant.authentication.domain.repository.AuthRepository
 import dev.sobhy.babycareassistant.authentication.domain.usecase.ValidateEmail
 import dev.sobhy.babycareassistant.authentication.domain.usecase.ValidatePassword
+import dev.sobhy.babycareassistant.alarm.data.FeedingSchedule
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -14,6 +15,8 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.time.LocalDate
+import java.time.Period
+import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 
 @HiltViewModel
@@ -28,7 +31,14 @@ class RegisterViewModel @Inject constructor(
     fun onEvent(event: RegisterUiEvent) {
         when (event) {
             is RegisterUiEvent.ImageChange -> _registerState.update { it.copy(image = event.image) }
-            is RegisterUiEvent.DOBChange -> _registerState.update { it.copy(dateOfBirth = event.dateOfBirth) }
+            is RegisterUiEvent.DOBChange -> {
+                _registerState.update {
+                    it.copy(
+                        dateOfBirth = event.dateOfBirth,
+                        age = calculateBabyAge(event.dateOfBirth.toString())
+                    )
+                }
+            }
             is RegisterUiEvent.AgeChange -> _registerState.update { it.copy(age = event.age) }
             is RegisterUiEvent.EmailChange -> _registerState.update { it.copy(email = event.email) }
             is RegisterUiEvent.GenderChange -> _registerState.update { it.copy(gender = event.gender) }
@@ -113,5 +123,15 @@ class RegisterViewModel @Inject constructor(
             _registerState.update { it.copy(isLoading = false, error = errorMessage) }
             Log.d("RegisterViewModel", "register: $errorMessage")
         }
+    }
+    private fun calculateBabyAge(dateOfBirth: String): Int{
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+        val dob = LocalDate.parse(dateOfBirth, formatter)
+        val now = LocalDate.now()
+        return Period.between(dob, now).months +1
+    }
+
+    fun fetchFeedingSchedule(babyAgeInMonths: Int, onComplete: (FeedingSchedule) -> Unit) {
+        authRepository.fetchFeedingSchedule(babyAgeInMonths, onComplete)
     }
 }

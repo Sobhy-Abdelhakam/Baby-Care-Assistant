@@ -8,7 +8,7 @@ sealed class ScreenRoutes(val route: String) {
     data object VaccinationScreen: ScreenRoutes("/home/vaccination")
     data object AddVaccination: ScreenRoutes("/home/vaccination/addVaccination")
     data object Breastfeed: ScreenRoutes("/home/breastfeed")
-    data object AddBreastfeed: ScreenRoutes("/home/breastfeed/addBreastfeed")
+//    data object AddBreastfeed: ScreenRoutes("/home/breastfeed/addBreastfeed")
     data object BabyGrowth: ScreenRoutes("/home/babyGrowth")
     data object AddBabyGrowth: ScreenRoutes("/home/babyGrowth/addBabyGrowth")
     data object BabySleep: ScreenRoutes("/home/babySleep")

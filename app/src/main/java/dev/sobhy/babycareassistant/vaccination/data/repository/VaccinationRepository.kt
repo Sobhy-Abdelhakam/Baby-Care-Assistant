@@ -1,6 +1,5 @@
 package dev.sobhy.babycareassistant.vaccination.data.repository
 
-import android.content.Context
 import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -11,22 +10,23 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 
 class VaccinationRepository(
-    private val firebaseAuth: FirebaseAuth,
-    private val firestore: FirebaseFirestore,
-    val context: Context
+    firebaseAuth: FirebaseAuth,
+    firestore: FirebaseFirestore,
+    private val alarmManagerHelper: AlarmManagerHelper,
 ) {
 
+    private val userDocRef = firestore.collection("users").document(firebaseAuth.currentUser!!.uid)
+    private val vaccinationCollectionRef = userDocRef.collection("vaccinations")
+
     fun saveVaccination(vaccination: Vaccination): Task<Void> {
-        val documentReference =
-            firestore.collection("users").document(firebaseAuth.currentUser!!.uid)
-                .collection("vaccinations").document()
-        val vaccinationWithId = vaccination.copy(id = documentReference.id)
-        return documentReference.set(vaccinationWithId).addOnSuccessListener {
-            AlarmManagerHelper.scheduleVaccinationAlarm(context, vaccinationWithId)
+        val vaccinationDocRef = vaccinationCollectionRef.document()
+        val vaccinationWithId = vaccination.copy(id = vaccinationDocRef.id)
+        return vaccinationDocRef.set(vaccinationWithId).addOnSuccessListener {
+            alarmManagerHelper.scheduleVaccinationAlarm(vaccinationWithId)
         }
     }
     fun updateVaccinationStatus(vaccinationId: String, onSuccess: () -> Unit, onError: (Exception) -> Unit) {
-        firestore.collection("users").document(firebaseAuth.currentUser!!.uid).collection("vaccinations")
+        vaccinationCollectionRef
             .document(vaccinationId) // Update the specific vaccination document
             .update("done", true) // Update the "status" field
             .addOnSuccessListener {
@@ -38,10 +38,7 @@ class VaccinationRepository(
     }
 
     suspend fun getVaccinations(): Flow<List<Vaccination>> = callbackFlow {
-        val collectionRef = firestore.collection("users")
-            .document(firebaseAuth.currentUser!!.uid)
-            .collection("vaccinations")
-        val subscription = collectionRef.addSnapshotListener { snapshot, e ->
+        val subscription = vaccinationCollectionRef.addSnapshotListener { snapshot, e ->
             if (e != null || snapshot == null) {
                 close(e)
             } else {

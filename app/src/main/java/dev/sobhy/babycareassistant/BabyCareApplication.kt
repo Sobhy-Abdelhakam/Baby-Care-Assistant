@@ -5,6 +5,9 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
 import dagger.hilt.android.HiltAndroidApp
+import dev.sobhy.babycareassistant.utils.NOTIFICATION_CHANNEL_DESCRIPTION
+import dev.sobhy.babycareassistant.utils.NOTIFICATION_CHANNEL_ID
+import dev.sobhy.babycareassistant.utils.NOTIFICATION_CHANNEL_NAME
 
 @HiltAndroidApp
 class BabyCareApplication: Application(){
@@ -12,11 +15,11 @@ class BabyCareApplication: Application(){
         super.onCreate()
         val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         val channel = NotificationChannel(
-            "baby_care_channel",
-            "feeding and diapers Reminder",
+            NOTIFICATION_CHANNEL_ID,
+            NOTIFICATION_CHANNEL_NAME,
             NotificationManager.IMPORTANCE_HIGH
         ).apply {
-            description = "Channel for breastfeeding and diapers reminder notifications"
+            description = NOTIFICATION_CHANNEL_DESCRIPTION
         }
         notificationManager.createNotificationChannel(channel)
     }

@@ -1,6 +1,5 @@
 package dev.sobhy.babycareassistant.healthinfo.addhealthinfo
 
-import android.util.Log
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -25,7 +24,6 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
-import dev.sobhy.babycareassistant.healthinfo.data.model.HealthInfo
 import dev.sobhy.babycareassistant.ui.composable.AddScreens
 import dev.sobhy.babycareassistant.ui.composable.CustomDatePicker
 import dev.sobhy.babycareassistant.ui.composable.CustomTextField
@@ -37,7 +35,6 @@ import java.time.Year
 @Composable
 fun AddHealthInfoScreen(
     navController: NavController,
-    modifier: Modifier = Modifier,
     healthInfoId: String? = null,
     viewModel: AddHealthInfoViewModel = hiltViewModel()
 ) {

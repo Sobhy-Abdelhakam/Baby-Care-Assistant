@@ -7,7 +7,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import dev.sobhy.babycareassistant.authentication.domain.repository.AuthRepository
 import dev.sobhy.babycareassistant.authentication.domain.usecase.ValidateEmail
 import dev.sobhy.babycareassistant.authentication.domain.usecase.ValidatePassword
-import dev.sobhy.babycareassistant.alarm.data.FeedingSchedule
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -129,9 +128,5 @@ class RegisterViewModel @Inject constructor(
         val dob = LocalDate.parse(dateOfBirth, formatter)
         val now = LocalDate.now()
         return Period.between(dob, now).months +1
-    }
-
-    fun fetchFeedingSchedule(babyAgeInMonths: Int, onComplete: (FeedingSchedule) -> Unit) {
-        authRepository.fetchFeedingSchedule(babyAgeInMonths, onComplete)
     }
 }

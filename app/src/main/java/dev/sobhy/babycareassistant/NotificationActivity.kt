@@ -27,9 +27,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import dagger.hilt.android.AndroidEntryPoint
+import dev.sobhy.babycareassistant.alarm.data.FeedingSchedule
 import dev.sobhy.babycareassistant.diapers.data.model.Diapers
 import dev.sobhy.babycareassistant.diapers.data.repository.DiapersRepository
-import dev.sobhy.babycareassistant.alarm.data.FeedingSchedule
 import dev.sobhy.babycareassistant.ui.composable.DiapersCardFromNotification
 import dev.sobhy.babycareassistant.ui.composable.VaccinationCardFromNotification
 import dev.sobhy.babycareassistant.ui.theme.BabyCareAssistantTheme

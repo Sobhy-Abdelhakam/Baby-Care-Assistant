@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.CardDefaults
@@ -34,7 +33,6 @@ fun CustomTimePicker(
     showTimePicker: Boolean,
     timeSelected: (LocalTime) -> Unit,
     dismissDialog: () -> Unit,
-    modifier: Modifier = Modifier,
 ) {
     if (showTimePicker.not()) return
     val timePickerState = rememberTimePickerState()

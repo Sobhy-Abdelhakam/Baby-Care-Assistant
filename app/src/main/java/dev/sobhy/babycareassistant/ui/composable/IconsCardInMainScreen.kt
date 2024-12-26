@@ -1,6 +1,5 @@
 package dev.sobhy.babycareassistant.ui.composable
 
-import android.graphics.drawable.Icon
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.aspectRatio
@@ -17,7 +16,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import dev.sobhy.babycareassistant.R
 
 @Composable
 fun IconsCardInMainScreen(

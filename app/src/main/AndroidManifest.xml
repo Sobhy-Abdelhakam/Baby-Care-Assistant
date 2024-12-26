@@ -37,7 +37,6 @@
         </activity>
 
         <receiver android:name=".alarm.notification.NotificationReceiver" />
-        <receiver android:name=".alarm.notification.FeedingNotificationReceiver"/>
     </application>
 
 </manifest>

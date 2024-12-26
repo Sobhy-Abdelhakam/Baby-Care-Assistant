@@ -1,0 +1,38 @@
+{
+    "month_1": {
+        "age": "1 month",
+        "daily_feedings": "12",
+        "milk_quantity": "90ml",
+        "notes": "Every 2 hours"
+    },
+    "month_2": {
+        "age": "2 months",
+        "daily_feedings": "8",
+        "milk_quantity": "120ml",
+        "notes": "Every 3 hours"
+    },
+    "month_3_4": {
+        "age": "3-4 months",
+        "daily_feedings": "6",
+        "milk_quantity": "180ml",
+        "notes": "Every 4 hours"
+    },
+    "month_5_6": {
+        "age": "5-6 months",
+        "daily_feedings": "6",
+        "milk_quantity": "200ml",
+        "notes": "Every 4 hours"
+    },
+    "month_7_9": {
+        "age": "7-9 months",
+        "daily_feedings": "5",
+        "milk_quantity": "240ml",
+        "notes": "Every 5 hours"
+    },
+    "month_10_12": {
+        "age": "10-12 months",
+        "daily_feedings": "4",
+        "milk_quantity": "240ml",
+        "notes": "Every 6 hours"
+    }
+}

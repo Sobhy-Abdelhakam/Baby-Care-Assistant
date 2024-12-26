@@ -4,8 +4,8 @@ import android.net.Uri
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
+import dev.sobhy.babycareassistant.alarm.data.repository.AlarmManagerHelper
 import dev.sobhy.babycareassistant.authentication.domain.UserProfile
-import dev.sobhy.babycareassistant.alarm.data.FeedingSchedule
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
@@ -15,6 +15,7 @@ class AuthRepository(
     private val auth: FirebaseAuth,
     private val db: FirebaseFirestore,
     private val storage: FirebaseStorage,
+    private val alarmManagerHelper: AlarmManagerHelper,
 ) {
 
     suspend fun register(
@@ -31,15 +32,24 @@ class AuthRepository(
         // Upload user data
         val profileImageUrl = uploadImage(userId, imageUri)
         saveUserData(userId, fullName, email, gender, dateOfBirth, age, profileImageUrl)
+        alarmManagerHelper.initialFeedingNotification()
 
         emit(Result.success("Registration successful"))
     }.catch { e ->
         emit(Result.failure(e))
     }
+//    private fun scheduleInitialNotification(age: Int) {
+//        fetchFeedingSchedule(age){feedingSchedule ->
+//            alarmManagerHelper.scheduleFeedingNotification(
+//                feedingSchedule,
+//                0 // Interval in hours
+//            )
+//        }
+//    }
 
     private suspend fun uploadImage(userId: String, imageUri: Uri): String {
         val imageRef = storage.reference.child("profile_images/$userId.jpg")
-        val uploadTask = imageRef.putFile(imageUri).await()
+        imageRef.putFile(imageUri).await()
         return imageRef.downloadUrl.await().toString()
     }
 
@@ -67,8 +77,7 @@ class AuthRepository(
         email: String,
         password: String
     ): Flow<Result<String>> = flow {
-        val authResult = auth.signInWithEmailAndPassword(email, password).await()
-        val user = authResult.user ?: throw Exception("User is null")
+        auth.signInWithEmailAndPassword(email, password).await()
 
         // Emit success result
         emit(Result.success("Login successful"))
@@ -87,23 +96,23 @@ class AuthRepository(
         emit(Result.failure(e))
     }
 
-    fun fetchFeedingSchedule(babyAgeInMonths: Int, onComplete: (FeedingSchedule) -> Unit) {
-        val documentId = when (babyAgeInMonths) {
-            1 -> "month_1"
-            2 -> "month_2"
-            in 3..4 -> "month_3_4"
-            in 5..6 -> "month_5_6"
-            in 7..9 -> "month_7_9"
-            in 10..12 -> "month_10_12"
-            else -> null
-        }
-
-        documentId?.let {docId ->
-            db.collection("feeding_schedule").document(docId).get()
-                .addOnSuccessListener { document ->
-                    document.toObject(FeedingSchedule::class.java)?.let { onComplete(it) }
-                }
-        }
-    }
+//    fun fetchFeedingSchedule(babyAgeInMonths: Int, onComplete: (FeedingSchedule) -> Unit) {
+//        val documentId = when (babyAgeInMonths) {
+//            1 -> "month_1"
+//            2 -> "month_2"
+//            in 3..4 -> "month_3_4"
+//            in 5..6 -> "month_5_6"
+//            in 7..9 -> "month_7_9"
+//            in 10..12 -> "month_10_12"
+//            else -> null
+//        }
+//
+//        documentId?.let {docId ->
+//            db.collection("feeding_schedule").document(docId).get()
+//                .addOnSuccessListener { document ->
+//                    document.toObject(FeedingSchedule::class.java)?.let { onComplete(it) }
+//                }
+//        }
+//    }
 
 }

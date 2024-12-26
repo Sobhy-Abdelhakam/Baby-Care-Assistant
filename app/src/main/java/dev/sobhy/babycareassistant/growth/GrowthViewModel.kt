@@ -3,7 +3,6 @@ package dev.sobhy.babycareassistant.growth
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dev.sobhy.babycareassistant.growth.data.model.BabyGrowth
 import dev.sobhy.babycareassistant.growth.domain.usecases.CheckBabyGrowthUseCase
 import dev.sobhy.babycareassistant.growth.domain.usecases.DeleteGrowthUseCase
 import dev.sobhy.babycareassistant.growth.domain.usecases.GetGrowthUseCase
